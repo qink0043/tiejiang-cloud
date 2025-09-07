@@ -3,16 +3,14 @@ import logo from '@/assets/logo.jpg'
 import { ThemeContext } from '@/contexts/ThemeContext'
 import { useContext } from 'react'
 import '@/views/Login/index.scss'
+import type { LoginForm } from '@/types'
 
 const Login: React.FC = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext)
   const onFinish = (values: LoginForm) => {
     console.log(values)
   }
-  interface LoginForm {
-    emailOrUsername: string
-    password: string
-  }
+
   return (
     <div className="login">
       <Switch

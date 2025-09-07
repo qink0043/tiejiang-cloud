@@ -9,6 +9,8 @@ import '@ant-design/v5-patch-for-react-19'
 import './styles/theme.scss'
 import router from './routes'
 import { ThemeProvider, ThemeContext } from './contexts/ThemeContext'
+import { Provider } from 'react-redux'
+import store from './stores'
 
 const RootApp = () => {
   const { isDarkMode } = useContext(ThemeContext)
@@ -38,7 +40,9 @@ const root = createRoot(document.getElementById('root')!)
 root.render(
   <StrictMode>
     <ThemeProvider>
-      <RootApp />
+      <Provider store={store}>
+        <RootApp />
+      </Provider>
     </ThemeProvider>
   </StrictMode>,
 )
