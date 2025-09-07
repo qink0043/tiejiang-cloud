@@ -4,6 +4,11 @@
   align-items: center;
   height: 80vh;
   background-color: var(--background-color);
+  .theme-switch {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
   .login-container {
     width: 400px;
     height: 400px;
