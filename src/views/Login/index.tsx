@@ -1,10 +1,15 @@
-import { Button, Card, Form, Input } from 'antd';
+import { Button, Card, Form, Input, Switch } from 'antd';
 import logo from '@/assets/logo.jpg'
 import '@/views/Login/index.scss'
+import { ThemeContext } from '@/contexts/ThemeContext';
+import { useContext } from 'react';
 
-const Login = () => {
+const Login: React.FC = () => {
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   return (
     <div className="login">
+      <Switch checked={isDarkMode} onChange={toggleTheme} />
+
       <Card className="login-container">
         <img src={logo} alt="logo" className="login-logo" />
         {/* 登录表单 */}
@@ -16,7 +21,7 @@ const Login = () => {
             <Input size='large' placeholder="请输入密码" />
           </Form.Item>
           <Form.Item>
-            <Button size='large' htmlType='submit' type='primary' block>登录</Button>
+            <Button type="primary">Happy Work</Button>
           </Form.Item>
         </Form>
       </Card>

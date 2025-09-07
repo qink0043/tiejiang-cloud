@@ -1,114 +1,27 @@
-// 主题变量定义
+// src/styles/index.scss
+
+// 定义一个 SCSS 变量，用于保存 CSS 变量的前缀
+$prefix: '--custom-';
+
+// 默认（亮色）主题的 CSS 变量
 :root {
-  // 白天主题
-  --primary-color: #1890ff;
-  --background-color: #ffffff;
-  --text-color: #333333;
-  --text-color-secondary: #666666;
-  --border-color: #d9d9d9;
-  --card-background: #ffffff;
-  --hover-color: #f5f5f5;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --input-background: #ffffff;
-  --input-hover-border: #40a9ff;
-  --input-focus-shadow: rgba(24, 144, 255, 0.2);
+  #{$prefix}background: #f0f2f5;
+  #{$prefix}text-color: #333;
+  #{$prefix}card-bg: #fff;
+  #{$prefix}primary-color: #1677ff;
 }
 
-[data-theme="dark"] {
-  // 黑夜主题
-  --primary-color: #177ddc;
-  --background-color: #141414;
-  --text-color: #e6e6e6;
-  --text-color-secondary: #999999;
-  --border-color: #434343;
-  --card-background: #1f1f1f;
-  --hover-color: #2a2a2a;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --input-background: #1f1f1f;
-  --input-hover-border: #177ddc;
-  --input-focus-shadow: rgba(23, 125, 220, 0.2);
+// 暗色主题的 CSS 变量
+.dark-theme {
+  #{$prefix}background: #001529;
+  #{$prefix}text-color: rgba(255, 255, 255, 0.85);
+  #{$prefix}card-bg: #1f1f1f;
+  #{$prefix}primary-color: #1677ff; // 这里可以根据需要更改
 }
 
-// 基础样式应用
+// 基础样式
 body {
-  background-color: var(--background-color);
-  color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-// Ant Design 组件样式修复
-[data-theme="dark"] {
-  // 输入框样式修复
-  .ant-input,
-  .ant-input-affix-wrapper,
-  .ant-input-password {
-    background-color: var(--input-background) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-color) !important;
-
-    &:hover {
-      border-color: var(--input-hover-border) !important;
-      background-color: var(--input-background) !important;
-    }
-
-    &:focus,
-    &.ant-input-focused {
-      border-color: var(--primary-color) !important;
-      box-shadow: 0 0 0 2px var(--input-focus-shadow) !important;
-      background-color: var(--input-background) !important;
-    }
-  }
-
-  // 选择器样式修复
-  .ant-select-selector {
-    background-color: var(--input-background) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-color) !important;
-  }
-
-  // 卡片样式
-  .ant-card {
-    background-color: var(--card-background);
-    border-color: var(--border-color);
-    color: var(--text-color);
-  }
-
-  // 按钮样式
-  .ant-btn {
-    &:not(.ant-btn-primary) {
-      color: var(--text-color);
-      border-color: var(--border-color);
-      background-color: var(--card-background);
-
-      &:hover {
-        color: var(--primary-color);
-        border-color: var(--primary-color);
-      }
-    }
-  }
-}
-
-// 确保所有组件都使用主题变量
-.ant-layout {
-  background-color: var(--background-color);
-}
-
-.ant-menu {
-  background-color: var(--card-background);
-  color: var(--text-color);
-}
-
-.ant-table {
-  background-color: var(--card-background);
-  color: var(--text-color);
-
-  .ant-table-thead > tr > th {
-    background-color: var(--hover-color);
-    color: var(--text-color);
-    border-color: var(--border-color);
-  }
-
-  .ant-table-tbody > tr > td {
-    border-color: var(--border-color);
-  }
+  transition: background-color 0.3s ease;
+  background-color: var(#{$prefix}background);
+  color: var(#{$prefix}text-color);
 }

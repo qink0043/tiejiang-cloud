@@ -1,4 +1,4 @@
-import Layout from "@/views/Layout"
+import Layout from "@/views/Layout/Layout"
 import Login from "@/views/Login"
 
 import { createBrowserRouter } from "react-router-dom"

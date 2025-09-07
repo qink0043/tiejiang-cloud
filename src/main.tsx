@@ -1,45 +1,31 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { RouterProvider } from 'react-router-dom'
-import { ConfigProvider } from 'antd'
-import zhCN from 'antd/locale/zh_CN'
-import router from './routes'
-import { ThemeProvider } from './contexts/ThemeContext'
-import { useAntdTheme } from './hooks/useAntdTheme' // 新增的hook
-import '@/styles/theme.scss'
-import 'antd/dist/reset.css' // 确保Ant Design样式重置
-import './index.scss'
+// src/main.tsx
+import { useContext, useEffect } from 'react';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+import { ConfigProvider, theme } from 'antd';
 
-// Ant Design主题包装组件
-const AntdConfigWrapper = () => {
-  const { algorithm } = useAntdTheme();
-  
+import './styles/theme.scss'; // 导入全局 SCSS 文件
+import router from './routes';
+import { ThemeProvider, ThemeContext } from './contexts/ThemeContext';
+
+const RootApp = () => {
+  const { isDarkMode } = useContext(ThemeContext);
+  const { defaultAlgorithm, darkAlgorithm } = theme;
+
+  useEffect(() => {
+    // 页面加载时和主题模式改变时，动态切换 body 上的类名
+    if (isDarkMode) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+  }, [isDarkMode]);
+
   return (
     <ConfigProvider
-      locale={zhCN}
       theme={{
-        algorithm,
-        token: {
-          colorPrimary: 'var(--primary-color)',
-          colorBgContainer: 'var(--card-background)',
-          colorText: 'var(--text-color)',
-          colorTextSecondary: 'var(--text-color-secondary)',
-          colorBorder: 'var(--border-color)',
-          colorBgElevated: 'var(--card-background)',
-        },
-        components: {
-          Input: {
-            colorBgContainer: 'var(--input-background)',
-            colorBorder: 'var(--border-color)',
-            hoverBorderColor: 'var(--input-hover-border)',
-            activeBorderColor: 'var(--primary-color)',
-            activeShadow: 'var(--input-focus-shadow)',
-          },
-          Select: {
-            colorBgContainer: 'var(--input-background)',
-            colorBorder: 'var(--border-color)',
-          },
-        },
+        algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm,
       }}
     >
       <RouterProvider router={router} />
@@ -47,11 +33,11 @@ const AntdConfigWrapper = () => {
   );
 };
 
-const root = createRoot(document.getElementById('root')!)
+const root = createRoot(document.getElementById('root')!);
 root.render(
   <StrictMode>
     <ThemeProvider>
-      <AntdConfigWrapper />
+      <RootApp />
     </ThemeProvider>
   </StrictMode>
-)
+);
