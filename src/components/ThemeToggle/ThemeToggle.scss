@@ -1,0 +1,18 @@
+.theme-toggle {
+  background-color: var(--border-color) !important;
+  
+  &.ant-switch-checked {
+    background-color: var(--primary-color) !important;
+  }
+  
+  .ant-switch-handle {
+    &::before {
+      background-color: var(--background-color);
+    }
+  }
+  
+  .anticon {
+    color: var(--text-color);
+    font-size: 12px;
+  }
+}

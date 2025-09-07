@@ -1,0 +1,19 @@
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  background-color: var(--background-color);
+  .login-container {
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    .login-logo {
+      width: 100px;
+      height: 100px;
+      margin: 20px auto;
+      display: block;
+      border-radius: 50%;
+    }
+  }
+}
