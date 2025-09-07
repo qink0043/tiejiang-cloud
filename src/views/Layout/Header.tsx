@@ -1,14 +1,14 @@
 // src/components/Layout/Header.tsx
-import React, { useContext } from 'react';
-import { Layout, Switch, Space } from 'antd';
-import { BulbOutlined } from '@ant-design/icons';
-import { ThemeContext } from '../../contexts/ThemeContext'; // 导入你的 Context
+import React, { useContext } from 'react'
+import { Layout, Switch, Space } from 'antd'
+import { BulbOutlined } from '@ant-design/icons'
+import { ThemeContext } from '../../contexts/ThemeContext' // 导入你的 Context
 
-const { Header: AntdHeader } = Layout;
+const { Header: AntdHeader } = Layout
 
 const Header: React.FC = () => {
   // 使用 useContext 消费 ThemeContext
-  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext)
 
   return (
     <AntdHeader
@@ -29,7 +29,7 @@ const Header: React.FC = () => {
         <Switch checked={isDarkMode} onChange={toggleTheme} />
       </Space>
     </AntdHeader>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

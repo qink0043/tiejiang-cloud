@@ -1,8 +1,8 @@
-import { Layout as AntdLayout } from 'antd';
-import { Outlet } from 'react-router-dom';
-import Header from './Header';
+import { Layout as AntdLayout } from 'antd'
+import { Outlet } from 'react-router-dom'
+import Header from './Header'
 
-const { Content } = AntdLayout;
+const { Content } = AntdLayout
 
 const Layout = () => {
   return (
@@ -15,7 +15,7 @@ const Layout = () => {
         </Content>
       </AntdLayout>
     </AntdLayout>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

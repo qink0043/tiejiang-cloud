@@ -1,26 +1,45 @@
-import { Button, Card, Form, Input, Switch } from 'antd';
+import { Button, Card, Form, Input, Switch } from 'antd'
 import logo from '@/assets/logo.jpg'
+import { ThemeContext } from '@/contexts/ThemeContext'
+import { useContext } from 'react'
 import '@/views/Login/index.scss'
-import { ThemeContext } from '@/contexts/ThemeContext';
-import { useContext } from 'react';
 
 const Login: React.FC = () => {
-  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext)
+  const onFinish = (values: LoginForm) => {
+    console.log(values)
+  }
+  interface LoginForm {
+    emailOrUsername: string
+    password: string
+  }
   return (
     <div className="login">
-      <Switch checked={isDarkMode} onChange={toggleTheme} className='theme-switch'/>
+      <Switch
+        checked={isDarkMode}
+        onChange={toggleTheme}
+        className="theme-switch"
+      />
       <Card className="login-container">
         <img src={logo} alt="logo" className="login-logo" />
         {/* 登录表单 */}
-        <Form>
-          <Form.Item name="username">
-            <Input size='large' placeholder="请输入用户名或邮箱" />
+        <Form validateTrigger={'onBlur'} onFinish={onFinish}>
+          <Form.Item
+            name="emailOrUsername"
+            rules={[{ required: true, message: '请输入用户名或邮箱!' }]}
+          >
+            <Input size="large" placeholder="用户名或邮箱" />
           </Form.Item>
-          <Form.Item name="password">
-            <Input size='large' placeholder="请输入密码" />
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: '你忘了输密码!' }]}
+          >
+            <Input size="large" placeholder="密码" />
           </Form.Item>
           <Form.Item>
-            <Button type="primary">Happy Work</Button>
+            <Button type="primary" htmlType="submit" size="large" block>
+              登录
+            </Button>
           </Form.Item>
         </Form>
       </Card>
@@ -28,4 +47,4 @@ const Login: React.FC = () => {
   )
 }
 
-export default Login;
+export default Login
