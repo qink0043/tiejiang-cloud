@@ -1,21 +1,33 @@
-import type { Response } from ".";
+import type { Response } from '.'
 
 export interface LoginForm {
   emailOrUsername: string
   password: string
 }
 
+export interface RegisterForm {
+  email: string
+  username: string
+  verifyCode: string
+  password: string
+  confirmPassword: string
+}
+
 export interface UserInfo {
-  id: number;
-  email: string;
-  username: string;
-  avatar: string;
+  id: number
+  email: string
+  username: string
+  avatar: string
 }
 
 export interface LoginData {
-  token: string;
-  userInfo: UserInfo;
-  expiresIn?: number; // token过期时间（秒）
+  token: string
+  userInfo: UserInfo
+  expiresIn?: number // token过期时间（秒）
 }
 
-export type LoginResponse = Response<LoginData>;
+export type LoginResponse = Response<LoginData>
+export type UserInfoResponse = Response<UserInfo>
+export type RegisterResponse = Response<{
+  message: string
+}>
