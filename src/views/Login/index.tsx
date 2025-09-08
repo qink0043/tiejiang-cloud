@@ -4,11 +4,18 @@ import { ThemeContext } from '@/contexts/ThemeContext'
 import { useContext } from 'react'
 import '@/views/Login/index.scss'
 import type { LoginForm } from '@/types'
+import { fetchLogin } from '@/stores/modules/user'
+import { useDispatch } from 'react-redux'
 
 const Login: React.FC = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext)
+  const dispatch = useDispatch()
   const onFinish = (values: LoginForm) => {
-    console.log(values)
+    // 登录逻辑
+    fetchLogin(values)(dispatch)
+  }
+  const onFinishFailed = (errorInfo: any) => {
+    console.log('Failed:', errorInfo)
   }
 
   return (
@@ -21,7 +28,11 @@ const Login: React.FC = () => {
       <Card className="login-container">
         <img src={logo} alt="logo" className="login-logo" />
         {/* 登录表单 */}
-        <Form validateTrigger={'onBlur'} onFinish={onFinish}>
+        <Form
+          validateTrigger={'onBlur'}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+        >
           <Form.Item
             name="emailOrUsername"
             rules={[{ required: true, message: '请输入用户名或邮箱!' }]}

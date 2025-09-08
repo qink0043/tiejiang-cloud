@@ -1,4 +1,3 @@
-import type { Response } from '@/types'
 import axios, { type AxiosResponse } from 'axios'
 
 const http = axios.create({

@@ -12,24 +12,28 @@ const userStore = createSlice({
     setToken(state, action) {
       state.token = action.payload
     },
+    setUserInfo(state, action) {
+      state.userInfo = action.payload
+    },
   },
 })
 
 // 解构出actionCreator
-const { setToken } = userStore.actions
+const { setToken, setUserInfo } = userStore.actions
 
 // 导出reducer
 const userReducer = userStore.reducer
 
-// 异步方法 完成登录获取token
-const fetchLogin = (loginForm: LoginForm) => {
+// 异步方法 完成登录获取token和用户信息
+export const fetchLogin = (loginForm: LoginForm) => {
   return async (dispatch: Dispatch) => {
     const res = await login(loginForm)
-    if (res.data.code === 200 ) {
+    if (res.data.code === 200) {
       dispatch(setToken(res.data.data?.token))
+      dispatch(setUserInfo(res.data.data?.userInfo))
     }
   }
 }
 
-export { setToken }
+export { setToken, setUserInfo }
 export default userReducer
