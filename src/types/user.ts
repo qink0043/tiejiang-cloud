@@ -12,6 +12,14 @@ export interface UserInfo {
   avatar: string;
 }
 
+export interface RegisterForm {
+  email: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+  captcha: string;
+}
+
 export interface LoginData {
   token: string;
   userInfo: UserInfo;
