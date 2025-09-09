@@ -17,7 +17,8 @@ import '@/views/Login/index.scss'
 import type { LoginForm } from '@/types'
 import { fetchLogin } from '@/stores/modules/user'
 import { useDispatch } from 'react-redux'
-import type { RegisterForm } from '@/types/user'
+import type { EmailRegisterForm, UsernameRegisterForm } from '@/types/user'
+import { emailRegister, getEmailCaptcha, usernameRegister } from '@/api/user'
 
 type Align = '登录' | '注册'
 const Login: React.FC = () => {
@@ -26,28 +27,38 @@ const Login: React.FC = () => {
   const [registerType, setRegisterType] = useState<
     'email' | 'username' | 'phone' | 'qq' | ''
   >('')
+  // 是否已发送验证码
+  const [isCaptchaSent, setIsCaptchaSent] = useState(false)
+  // 邮箱后缀
+  const [emailSuffix, setEmailSuffix] = useState('@qq.com')
+  // 按钮加载状态
+  const [loading, setLoading] = useState(false)
   // 登录表单
   const [loginForm, setLoginForm] = useState<LoginForm>({
     emailOrUsername: '',
     password: '',
   })
-  // 注册表单
-  const [registerForm, setRegisterForm] = useState<RegisterForm>({
-    email: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    captcha: '',
-  })
+  // 邮箱注册表单
+  const [emailRegisterForm, setEmailRegisterForm] = useState<EmailRegisterForm>(
+    {
+      email: '',
+      password: '',
+      confirmPassword: '',
+      captcha: '',
+    },
+  )
+  // 用户名注册表单
+  const [usernameRegisterForm, setUsernameRegisterForm] =
+    useState<UsernameRegisterForm>({
+      username: '',
+      password: '',
+      confirmPassword: '',
+    })
+
   const dispatch = useDispatch()
   const onLoginFinish = (values: LoginForm) => {
     // 登录逻辑
     fetchLogin(values)(dispatch)
-  }
-
-  const onRegisterFinish = (values: RegisterForm) => {
-    // 注册逻辑
-    console.log(values)
   }
   const onLoginFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -62,31 +73,101 @@ const Login: React.FC = () => {
       emailOrUsername: '',
       password: '',
     })
-    setRegisterForm({
+    setEmailRegisterForm({
       email: '',
-      username: '',
       password: '',
       confirmPassword: '',
       captcha: '',
     })
   }
 
+  // 邮箱注册
+  const onEmailRegisterFinish = async (values: EmailRegisterForm) => {
+    console.log(values)
+    // 如果发送过验证码
+    if (isCaptchaSent) {
+      try {
+        const res = await emailRegister(values)
+        if (res.data.code === 200) {
+          // 注册
+        } else {
+          throw new Error(res.data.message)
+        }
+      } catch (error: any) {
+        message.open({
+          type: 'error',
+          content: error.response.data.message,
+        })
+        return
+      }
+      return
+    } else {
+      // 发送验证码
+      try {
+        values.email = `${values.email}${emailSuffix}`
+        console.log(values)
+        const res = await getEmailCaptcha(values.email)
+        setLoading(true)
+        if (res.data.code === 200) {
+          message.open({
+            type: 'success',
+            content: '验证码已发送！',
+          })
+          setIsCaptchaSent(true)
+        } else {
+          throw new Error(res.data.message)
+        }
+      } catch (error: any) {
+        message.open({
+          type: 'error',
+          content: error.response.data.message,
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+  // 用户名注册
+  const onUsernameRegisterFinish = async (values: UsernameRegisterForm) => {
+    console.log(values)
+    try {
+      const res = await usernameRegister(values)
+      if (res.data.code === 200) {
+        message.open({
+          type: 'success',
+          content: '注册成功！',
+        })
+      } else {
+        throw new Error(res.data.message)
+      }
+    } catch (error: any) {
+      message.open({
+        type: 'error',
+        content: error.response.data.message,
+      })
+      return
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // 可供选择的邮箱后缀
   const emails = (
     <Select
-      defaultValue="qq.com"
+      defaultValue="@qq.com"
+      onChange={(value) => setEmailSuffix(value)}
       options={[
         {
-          label: 'qq.com',
-          value: 'qq.com',
+          label: '@qq.com',
+          value: '@qq.com',
         },
         {
-          label: '163.com',
-          value: '163.com',
+          label: '@163.com',
+          value: '@163.com',
         },
         {
-          label: 'gmail.com',
-          value: 'gmail.com',
+          label: '@gmail.com',
+          value: '@gmail.com',
         },
       ]}
     />
@@ -145,7 +226,7 @@ const Login: React.FC = () => {
                 登录
               </Button>
             </Form.Item>
-            <Button type="link" size="large" block>
+            <Button type="link" size="large">
               忘记密码
             </Button>
           </Form>
@@ -216,20 +297,24 @@ const Login: React.FC = () => {
                 }}
                 className="back-btn"
               >
-                ←返回
+                ←选择注册方式
               </Button>
               {/* 邮箱注册 */}
               {registerType === 'email' && (
                 <Form
                   validateTrigger={'onBlur'}
-                  onFinish={onRegisterFinish}
+                  onFinish={onEmailRegisterFinish}
                   onFinishFailed={onRegisterFinishFailed}
                 >
                   <Form.Item
                     name="email"
                     rules={[{ required: true, message: '请输入邮箱!' }]}
                   >
-                    <Input addonAfter={emails} size='large' placeholder="请输入邮箱" />
+                    <Input
+                      addonAfter={emails}
+                      size="large"
+                      placeholder="请输入邮箱"
+                    />
                   </Form.Item>
                   <Form.Item
                     name="captcha"
@@ -240,19 +325,41 @@ const Login: React.FC = () => {
                       formatter={(value) => value.replace(/\D/g, '')}
                     />
                   </Form.Item>
+                  <Form.Item
+                    name="password"
+                    rules={[{ required: true, message: '请输入密码!' }]}
+                  >
+                    <Input size="large" placeholder="密码" />
+                  </Form.Item>
+                  <Form.Item
+                    name="confirmPassword"
+                    rules={[{ required: true, message: '请输入确认密码!' }]}
+                  >
+                    <Input size="large" placeholder="确认密码" />
+                  </Form.Item>
                   <Form.Item>
-                    <Button type="primary" htmlType="submit" size="large" block>
-                      获取验证码
+                    <Button
+                      loading={loading}
+                      type="primary"
+                      htmlType="submit"
+                      size="large"
+                      block
+                    >
+                      {isCaptchaSent ? '注册' : '获取验证码'}
                     </Button>
                   </Form.Item>
+                  {isCaptchaSent && (
+                    <Button type="link" size="large">
+                      重新获取验证码
+                    </Button>
+                  )}
                 </Form>
               )}
               {/* 用户名注册 */}
               {registerType === 'username' && (
                 <Form
                   validateTrigger={'onBlur'}
-                  onFinish={onRegisterFinish}
-                  onFinishFailed={onRegisterFinishFailed}
+                  onFinish={onUsernameRegisterFinish}
                 >
                   <Form.Item
                     name="username"
