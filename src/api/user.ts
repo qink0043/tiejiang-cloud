@@ -1,15 +1,36 @@
-import type { LoginForm } from "@/types"
-import http from "."
-import type { LoginResponse, RegisterForm, RegisterResponse, UserInfoResponse } from "@/types/user"
+import type { LoginForm, Response } from '@/types'
+import http from '.'
+import type {
+  EmailRegisterForm,
+  LoginResponse,
+  UsernameRegisterForm,
+} from '@/types/user'
+import type { AxiosResponse } from 'axios'
 
-export const login = (loginForm: LoginForm) => {
+// 登录
+export const login = (
+  loginForm: LoginForm,
+): Promise<AxiosResponse<LoginResponse>> => {
   return http.post<LoginResponse>('/user/login', loginForm)
 }
 
-export const getUserInfo = () => {
-  return http.get<UserInfoResponse>('/user/info')
+// 获取邮箱验证码
+export const getEmailCaptcha = (
+  email: string,
+): Promise<AxiosResponse<Response>> => {
+  return http.post<Response>('/email/send-code', { email })
 }
 
-export const register = (registerForm: RegisterForm) => {
-  return http.post<RegisterResponse>('/user/register', registerForm)
+// 邮箱注册
+export const emailRegister = (
+  registerForm: EmailRegisterForm,
+): Promise<AxiosResponse<Response>> => {
+  return http.post<Response>('/user/register/email', registerForm)
+}
+
+// 用户名注册
+export const usernameRegister = (
+  registerForm: UsernameRegisterForm,
+): Promise<AxiosResponse<Response>> => {
+  return http.post<Response>('/user/register/username', registerForm)
 }

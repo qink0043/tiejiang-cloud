@@ -20,6 +20,19 @@ export interface UserInfo {
   avatar: string
 }
 
+export interface EmailRegisterForm {
+  email: string
+  password: string
+  confirmPassword: string
+  captcha: string
+}
+
+export interface UsernameRegisterForm {
+  username: string
+  password: string
+  confirmPassword: string
+}
+
 export interface LoginData {
   token: string
   userInfo: UserInfo
@@ -27,7 +40,3 @@ export interface LoginData {
 }
 
 export type LoginResponse = Response<LoginData>
-export type UserInfoResponse = Response<UserInfo>
-export type RegisterResponse = Response<{
-  message: string
-}>

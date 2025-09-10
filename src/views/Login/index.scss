@@ -11,14 +11,54 @@
   }
   .login-container {
     width: 400px;
-    height: 400px;
+    height: 550px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
     .login-logo {
-      width: 100px;
-      height: 100px;
-      margin: 20px auto;
+      width: 150px;
+      height: 150px;
+      margin: 0px auto;
       display: block;
-      border-radius: 50%;
+    }
+    .segmented-container {
+      margin-bottom: 20px;
+    }
+    .register-container {
+      position: relative;
+      overflow: hidden;
+
+      .select-container {
+        transition: all 0.3s ease-in-out;
+
+        &.active {
+          transform: translateX(-110%);
+          transition: all 0.3s ease-in-out;
+        }
+        .select-btns {
+          height: 150px;
+        }
+        .ant-btn {
+          margin-bottom: 10px;
+        }
+      }
+      .register-form {
+        position: absolute;
+        top: 0;
+        left: 120%;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        background-color: var(--background-color);
+        transition: all 0.3s ease-in-out;
+        &.active {
+          transform: translateX(-120%);
+          transition: all 0.3s ease-in-out;
+        }
+        .back-btn {
+          margin-bottom: 20px;
+        }
+      }
     }
   }
 }
