@@ -1,4 +1,6 @@
 import axios, { type AxiosResponse } from 'axios'
+import store from '@/stores'
+import { logout } from '@/stores/modules/user'
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -21,6 +23,11 @@ http.interceptors.response.use(
     return response
   },
   (error) => {
+    if (error.respinse && error.response.status === 401) {
+      // 处理未授权错误
+      localStorage.removeItem('token')
+      store.dispatch(logout())
+    }
     return Promise.reject(error)
   },
 )

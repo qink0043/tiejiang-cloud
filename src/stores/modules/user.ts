@@ -11,15 +11,25 @@ const userStore = createSlice({
   reducers: {
     setToken(state, action) {
       state.token = action.payload
+      if (action.payload) {
+        localStorage.setItem('token', action.payload)
+      } else {
+        localStorage.removeItem('token')
+      }
     },
     setUserInfo(state, action) {
       state.userInfo = action.payload
+    },
+    logout(state) {
+      state.token = ''
+      state.userInfo = {}
+      localStorage.removeItem('token')
     },
   },
 })
 
 // 解构出actionCreator
-const { setToken, setUserInfo } = userStore.actions
+const { setToken, setUserInfo, logout } = userStore.actions
 
 // 导出reducer
 const userReducer = userStore.reducer
@@ -35,5 +45,5 @@ export const fetchLogin = (loginForm: LoginForm) => {
   }
 }
 
-export { setToken, setUserInfo }
+export { setToken, setUserInfo, logout }
 export default userReducer
