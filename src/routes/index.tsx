@@ -1,5 +1,5 @@
 import Layout from '@/views/Layout/Layout'
-import Login from '@/views/Login'
+import LoginPage from '@/views/Login'
 
 import { createBrowserRouter } from 'react-router-dom'
 
@@ -11,7 +11,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <Login />,
+    element: <LoginPage />,
   },
 ])
 

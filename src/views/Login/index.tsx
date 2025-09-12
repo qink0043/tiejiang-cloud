@@ -15,13 +15,17 @@ import { ThemeContext } from '@/contexts/ThemeContext'
 import { useContext, useEffect, useState } from 'react'
 import '@/views/Login/index.scss'
 import type { LoginForm } from '@/types'
-import { fetchLogin } from '@/stores/modules/user'
 import { useDispatch } from 'react-redux'
 import type { EmailRegisterForm, UsernameRegisterForm } from '@/types/user'
 import { emailRegister, getEmailCaptcha, usernameRegister } from '@/api/user'
+import type { AppDispatch } from '@/stores/types/store'
+import { useAppDispatch, useAppSelector } from '@/stores/hooks'
+import { loginAction } from '@/stores/modules/user'
+import { useNavigate } from 'react-router-dom'
 
 type Align = '登录' | '注册'
-const Login: React.FC = () => {
+const LoginPage: React.FC = () => {
+  const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useContext(ThemeContext)
   const [alignValue, setAlignValue] = useState<Align>('登录')
   const [registerType, setRegisterType] = useState<
@@ -31,8 +35,6 @@ const Login: React.FC = () => {
   const [isCaptchaSent, setIsCaptchaSent] = useState(false)
   // 邮箱后缀
   const [emailSuffix, setEmailSuffix] = useState('@qq.com')
-  // 按钮加载状态
-  const [loading, setLoading] = useState(false)
   // 登录表单
   const [loginForm, setLoginForm] = useState<LoginForm>({
     emailOrUsername: '',
@@ -55,10 +57,14 @@ const Login: React.FC = () => {
       confirmPassword: '',
     })
 
-  const dispatch = useDispatch()
-  const onLoginFinish = (values: LoginForm) => {
-    // 登录逻辑
-    fetchLogin(values)(dispatch)
+  const dispatch = useAppDispatch()
+  const loginLoading = useAppSelector((state) => state.user.loginLoading)
+  const onLoginFinish = async (values: LoginForm) => {
+    // 登录
+    await dispatch(loginAction(values)).unwrap()
+    // 登录成功后，跳转到首页
+    message.success('登录成功！')
+    navigate('/')
   }
   const onLoginFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -107,7 +113,6 @@ const Login: React.FC = () => {
         values.email = `${values.email}${emailSuffix}`
         console.log(values)
         const res = await getEmailCaptcha(values.email)
-        setLoading(true)
         if (res.data.code === 200) {
           message.open({
             type: 'success',
@@ -122,8 +127,6 @@ const Login: React.FC = () => {
           type: 'error',
           content: error.response.data.message,
         })
-      } finally {
-        setLoading(false)
       }
     }
   }
@@ -146,8 +149,6 @@ const Login: React.FC = () => {
         content: error.response.data.message,
       })
       return
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -338,13 +339,7 @@ const Login: React.FC = () => {
                     <Input size="large" placeholder="确认密码" />
                   </Form.Item>
                   <Form.Item>
-                    <Button
-                      loading={loading}
-                      type="primary"
-                      htmlType="submit"
-                      size="large"
-                      block
-                    >
+                    <Button type="primary" htmlType="submit" size="large" block>
                       {isCaptchaSent ? '注册' : '获取验证码'}
                     </Button>
                   </Form.Item>
@@ -394,4 +389,4 @@ const Login: React.FC = () => {
   )
 }
 
-export default Login
+export default LoginPage

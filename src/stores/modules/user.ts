@@ -1,39 +1,59 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { login } from '@/api/user'
 import type { LoginForm } from '@/types'
-import { createSlice, type Dispatch } from '@reduxjs/toolkit'
+import { message } from 'antd'
 
-const userStore = createSlice({
+// 登录
+export const loginAction = createAsyncThunk(
+  'user/login',
+  async (loginForm: LoginForm, { rejectWithValue }) => {
+    try {
+      const res = await login(loginForm)
+      if (res.data.code === 200) {
+        return res.data.data
+      } else {
+        return rejectWithValue(res.data.message)
+      }
+    } catch (err: any) {
+      return rejectWithValue(err.message)
+    }
+  }
+)
+
+const userSlice = createSlice({
   name: 'user',
   initialState: {
-    token: '',
+    token: localStorage.getItem('token') || '',
     userInfo: {},
+    loginLoading: false,
   },
   reducers: {
-    setToken(state, action) {
-      state.token = action.payload
+    logout(state) {
+      state.token = ''
+      state.userInfo = {}
+      localStorage.removeItem('token') 
     },
-    setUserInfo(state, action) {
-      state.userInfo = action.payload
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginAction.pending, (state) => {
+        state.loginLoading = true
+      })
+      .addCase(loginAction.fulfilled, (state, action) => {
+        state.loginLoading = false
+        const token = action.payload?.token || ''
+        state.token = token
+        state.userInfo = action.payload?.userInfo || {}
+        if (token) {
+          localStorage.setItem('token', token)
+        }
+      })
+      .addCase(loginAction.rejected, (state, action) => {
+        state.loginLoading = false
+        message.error(action.payload as string)
+      })
   },
 })
 
-// 解构出actionCreator
-const { setToken, setUserInfo } = userStore.actions
-
-// 导出reducer
-const userReducer = userStore.reducer
-
-// 异步方法 完成登录获取token和用户信息
-export const fetchLogin = (loginForm: LoginForm) => {
-  return async (dispatch: Dispatch) => {
-    const res = await login(loginForm)
-    if (res.data.code === 200) {
-      dispatch(setToken(res.data.data?.token))
-      dispatch(setUserInfo(res.data.data?.userInfo))
-    }
-  }
-}
-
-export { setToken, setUserInfo }
-export default userReducer
+export const { logout } = userSlice.actions
+export default userSlice.reducer
