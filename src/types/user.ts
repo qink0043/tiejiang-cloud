@@ -5,6 +5,14 @@ export interface LoginForm {
   password: string
 }
 
+export interface RegisterForm {
+  email: string
+  username: string
+  verifyCode: string
+  password: string
+  confirmPassword: string
+}
+
 export interface UserInfo {
   id: number
   email: string
