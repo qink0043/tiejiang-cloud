@@ -1,8 +1,9 @@
-// src/components/Layout/Header.tsx
 import React, { useContext } from 'react'
 import { Layout, Switch, Space } from 'antd'
 import { BulbOutlined } from '@ant-design/icons'
-import { ThemeContext } from '../../contexts/ThemeContext' // 导入你的 Context
+import { ThemeContext } from '../../contexts/ThemeContext'
+import logo from '../../assets/logo.png'
+import './styles.scss'
 
 const { Header: AntdHeader } = Layout
 
@@ -11,16 +12,12 @@ const Header: React.FC = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext)
 
   return (
-    <AntdHeader
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 50px',
-      }}
-    >
-      <div className="logo" />
-      <Space>
+    <AntdHeader className="header-container" style={{ padding: 0 }}>
+      <div className="logo">
+        {logo && <img src={logo} alt="Logo" />}
+        <span>铁匠云盘</span>
+      </div>
+      <Space className="theme-switcher">
         <span>
           <BulbOutlined />
           {isDarkMode ? '暗色模式' : '亮色模式'}

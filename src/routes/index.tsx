@@ -1,5 +1,6 @@
 import Layout from '@/views/Layout/Layout'
 import LoginPage from '@/views/Login'
+import HomePage from '@/views/Home'
 
 import { createBrowserRouter } from 'react-router-dom'
 
@@ -8,6 +9,12 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+    ],
   },
   {
     path: '/login',

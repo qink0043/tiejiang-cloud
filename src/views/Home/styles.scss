@@ -1,0 +1,134 @@
+// 首页容器样式
+.home-container {
+  height: 100%;
+
+  // 适配暗色主题
+  :global(.dark-theme) & {
+    background-color: #141414;
+  }
+}
+
+// 页面头部样式
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+}
+
+// 存储信息卡片样式
+.storage-info-card {
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+
+  .ant-progress {
+    margin: 16px 0;
+  }
+
+  .stat-card {
+    margin-bottom: 8px;
+  }
+}
+
+// 文件列表卡片样式
+.file-list-card {
+  transition: all 0.3s ease;
+  .ant-table-tbody > tr > td {
+    transition: all 0.2s ease;
+  }
+
+  .ant-table-tbody > tr:hover > td {
+    background-color: rgba(24, 144, 255, 0.08);
+  }
+
+  // 暗色主题适配
+  :global(.dark-theme) & {
+    .ant-table-tbody > tr:hover > td {
+      background-color: rgba(24, 144, 255, 0.15);
+    }
+  }
+}
+
+// 文件和文件夹样式
+.file-folder {
+  font-weight: 500;
+  color: #1890ff;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.file-name {
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  // 暗色主题适配
+  :global(.dark-theme) & {
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+// 行样式
+.folder-row {
+  background-color: rgba(24, 144, 255, 0.03);
+}
+
+.file-row {
+  background-color: transparent;
+}
+
+// 响应式调整
+@media (max-width: 576px) {
+  .home-container {
+    padding: 12px;
+  }
+
+  .home-header {
+    .ant-input-search {
+      width: 100% !important;
+    }
+  }
+
+  .storage-info-card {
+    .ant-row {
+      > .ant-col {
+        margin-bottom: 16px;
+      }
+    }
+  }
+
+  .file-list-card {
+    .ant-table {
+      font-size: 14px;
+    }
+  }
+}
+
+// 动画效果
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-container > * {
+  animation: fadeIn 0.5s ease-out;
+}
