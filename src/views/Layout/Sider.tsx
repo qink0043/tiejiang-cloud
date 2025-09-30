@@ -1,30 +1,27 @@
-import React, { useContext } from 'react';
-import { Layout, Avatar, Menu, Progress, Card, Typography } from 'antd';
-import { FileOutlined } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import { ThemeContext } from '../../contexts/ThemeContext';
-import type { StorageInfo } from '@/types';
-import { formatFileSize } from '@/utils';
+import React, { useContext } from 'react'
+import { Layout, Avatar, Menu, Progress, Card, Typography } from 'antd'
+import { FileOutlined } from '@ant-design/icons'
+import type { MenuProps } from 'antd'
+import { ThemeContext } from '../../contexts/ThemeContext'
+import type { StorageInfo } from '@/types'
+import { formatFileSize } from '@/utils'
+import { useSelector } from 'react-redux'
+import type { RootState } from '@/stores/types/store'
 
-const { Sider: AntdSider } = Layout;
-const { Title, Text } = Typography;
-
-// 模拟用户信息
-const mockUserInfo = {
-  username: '张三',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ZhangSan',
-};
+const { Sider: AntdSider } = Layout
+const { Title, Text } = Typography
 
 // 模拟存储信息
 const mockStorageInfo: StorageInfo = {
   total: 10737418240, // 10GB
-  used: 3221225472,   // 3GB
-  free: 7516192768    // 7GB
-};
+  used: 3221225472, // 3GB
+  free: 7516192768, // 7GB
+}
 
 const Sider: React.FC = () => {
-  const { isDarkMode } = useContext(ThemeContext);
-  const storagePercentage = (mockStorageInfo.used / mockStorageInfo.total) * 100;
+  const { isDarkMode } = useContext(ThemeContext)
+  const { userInfo } = useSelector((state: RootState) => state.user)
+  const storagePercentage = (mockStorageInfo.used / mockStorageInfo.total) * 100
 
   const menuItems: MenuProps['items'] = [
     {
@@ -33,7 +30,7 @@ const Sider: React.FC = () => {
       label: '我的文件',
       className: 'menu-item',
     },
-  ];
+  ]
 
   return (
     <AntdSider
@@ -52,24 +49,25 @@ const Sider: React.FC = () => {
       {/* 用户信息和存储空间 */}
       <div className="sider-header">
         <div className="user-info">
-          <Avatar size={48} src={mockUserInfo.avatar} />
+          <Avatar size={48} src={userInfo?.avatar} />
           <Title level={5} className="username">
-            {mockUserInfo.username}
+            {userInfo?.username}
           </Title>
         </div>
-        
+
         <Card className="storage-card" size="small">
           <Title level={5}>存储空间</Title>
-          <Progress 
-            percent={storagePercentage} 
-            status="active" 
+          <Progress
+            percent={storagePercentage}
+            status="active"
             strokeColor={{
               '0%': '#108ee9',
               '100%': '#87d068',
             }}
           />
           <Text type="secondary">
-            已用: {formatFileSize(mockStorageInfo.used)} / 总共: {formatFileSize(mockStorageInfo.total)}
+            已用: {formatFileSize(mockStorageInfo.used)} / 总共:{' '}
+            {formatFileSize(mockStorageInfo.total)}
           </Text>
         </Card>
       </div>
@@ -84,7 +82,7 @@ const Sider: React.FC = () => {
         />
       </div>
     </AntdSider>
-  );
-};
+  )
+}
 
-export default Sider;
+export default Sider

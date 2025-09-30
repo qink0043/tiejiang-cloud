@@ -1,5 +1,5 @@
 import type { LoginForm, Response } from '@/types'
-import http from '.'
+import http from '..'
 import type {
   EmailRegisterForm,
   LoginResponse,
@@ -12,6 +12,11 @@ export const login = (
   loginForm: LoginForm,
 ): Promise<AxiosResponse<LoginResponse>> => {
   return http.post<LoginResponse>('/user/login', loginForm)
+}
+
+// 获取用户信息
+export const getUserInfo = () => {
+  return http.get<LoginResponse>('/user/me')
 }
 
 // 获取邮箱验证码

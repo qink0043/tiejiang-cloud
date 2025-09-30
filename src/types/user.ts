@@ -14,10 +14,10 @@ export interface RegisterForm {
 }
 
 export interface UserInfo {
-  id: number
-  email: string
-  username: string
-  avatar: string
+  id?: number
+  email?: string
+  username?: string
+  avatar?: string
 }
 
 export interface EmailRegisterForm {
