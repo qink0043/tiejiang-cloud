@@ -16,13 +16,10 @@ export const loginAction = createAsyncThunk(
   async (loginForm: LoginForm, thunkAPI) => {
     try {
       const res = await login(loginForm)
-      if (res.data.code === 200) {
-        return res.data.data
-      } else {
-        return thunkAPI.rejectWithValue(res.data.message)
-      }
+      return res
     } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.response?.data?.message || '登录失败')
+      // axios 拦截器抛出的 error 通常有 message
+      return thunkAPI.rejectWithValue(err.message || '登录失败')
     }
   },
 )
@@ -32,14 +29,11 @@ export const getUserInfoAction = createAsyncThunk(
   'user/getUserInfo',
   async (_, thunkAPI) => {
     try {
-      const res = await getUserInfo()
-      if (res.data.code === 200) {
-        return res.data.data
-      } else {
-        return thunkAPI.rejectWithValue(res.data.message)
-      }
+      console.log('store调用');
+      
+      return await getUserInfo()
     } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.message)
+      return thunkAPI.rejectWithValue(err.message || '获取用户信息失败')
     }
   },
 )
@@ -47,7 +41,7 @@ export const getUserInfoAction = createAsyncThunk(
 // 初始状态
 const initialState: UserState = {
   token: localStorage.getItem('token') || '',
-  userInfo: {},
+  userInfo: {} as UserInfo,
   loginLoading: false,
 }
 
@@ -57,7 +51,7 @@ const userSlice = createSlice({
   reducers: {
     logout(state) {
       state.token = ''
-      state.userInfo = {}
+      state.userInfo = {} as UserInfo
       localStorage.removeItem('token')
     },
   },
@@ -69,9 +63,9 @@ const userSlice = createSlice({
       })
       .addCase(loginAction.fulfilled, (state, action) => {
         state.loginLoading = false
-        const token = action.payload?.token || ''
+        console.log('登录返回:', action.payload)
+        const token = (action.payload as any)?.token || ''
         state.token = token
-        state.userInfo = action.payload?.userInfo || {}
         if (token) {
           localStorage.setItem('token', token)
         }

@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios';
+import type { CustomAxiosInstance } from './types';
 
 /**
  * 响应数据接口定义
@@ -20,8 +21,8 @@ interface CustomRequestConfig extends AxiosRequestConfig {
 /**
  * 创建 axios 实例
  */
-const service: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_BASE_URL, // API 基础路径
+const service: CustomAxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL, // API 基础路径
   timeout: 15000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json;charset=utf-8',
@@ -63,7 +64,7 @@ service.interceptors.request.use(
  * 响应拦截器
  */
 service.interceptors.response.use(
-  (response: AxiosResponse<ResponseData>) => {
+  <T>(response: AxiosResponse<{ code: number; message: string; data: T }>): T => {
     // 隐藏 loading
     // store.dispatch(setLoading(false));
 
@@ -79,22 +80,22 @@ service.interceptors.response.use(
         // 未授权,清除 token 并跳转到登录页
         localStorage.removeItem('token');
         window.location.href = '/login';
-        return Promise.reject(new Error(message || '未授权,请重新登录'));
+        throw new Error(message || '未授权,请重新登录');
 
       case 403:
         // 无权限
         console.error('无权限访问:', message);
-        return Promise.reject(new Error(message || '无权限访问'));
+        throw new Error(message || '无权限访问');
 
       case 500:
         // 服务器错误
         console.error('服务器错误:', message);
-        return Promise.reject(new Error(message || '服务器错误'));
+        throw new Error(message || '服务器错误');
 
       default:
         // 其他错误
         console.error('请求失败:', message);
-        return Promise.reject(new Error(message || '请求失败'));
+        throw new Error(message || '请求失败');
     }
   },
   (error: AxiosError<ResponseData>) => {
@@ -165,80 +166,24 @@ service.interceptors.response.use(
  * 封装的请求方法
  */
 class HttpRequest {
-  /**
-   * GET 请求
-   */
   get<T = any>(url: string, config?: CustomRequestConfig): Promise<T> {
-    return service.get(url, config);
+    return service.get<any, T>(url, config)
   }
 
-  /**
-   * POST 请求
-   */
   post<T = any>(url: string, data?: any, config?: CustomRequestConfig): Promise<T> {
-    return service.post(url, data, config);
+    return service.post<any, T>(url, data, config)
   }
 
-  /**
-   * PUT 请求
-   */
   put<T = any>(url: string, data?: any, config?: CustomRequestConfig): Promise<T> {
-    return service.put(url, data, config);
+    return service.put<any, T>(url, data, config)
   }
 
-  /**
-   * DELETE 请求
-   */
   delete<T = any>(url: string, config?: CustomRequestConfig): Promise<T> {
-    return service.delete(url, config);
+    return service.delete<any, T>(url, config)
   }
 
-  /**
-   * PATCH 请求
-   */
   patch<T = any>(url: string, data?: any, config?: CustomRequestConfig): Promise<T> {
-    return service.patch(url, data, config);
-  }
-
-  /**
-   * 上传文件
-   */
-  upload<T = any>(url: string, file: File | FormData, onProgress?: (progress: number) => void): Promise<T> {
-    const formData = file instanceof FormData ? file : new FormData();
-    if (file instanceof File) {
-      formData.append('file', file);
-    }
-
-    return service.post(url, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: (progressEvent) => {
-        if (progressEvent.total && onProgress) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          onProgress(progress);
-        }
-      },
-    });
-  }
-
-  /**
-   * 下载文件
-   */
-  download(url: string, filename?: string, config?: CustomRequestConfig): Promise<void> {
-    return service.get(url, {
-      ...config,
-      responseType: 'blob',
-    }).then((blob: any) => {
-      const url = window.URL.createObjectURL(new Blob([blob]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename || 'download');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    });
+    return service.patch<any, T>(url, data, config)
   }
 }
 
