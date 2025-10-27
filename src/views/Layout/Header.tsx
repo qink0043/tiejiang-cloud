@@ -2,7 +2,6 @@ import React, { useContext } from 'react'
 import { Layout, Switch, Space } from 'antd'
 import { BulbOutlined } from '@ant-design/icons'
 import { ThemeContext } from '../../contexts/ThemeContext'
-import logo from '../../assets/logo.png'
 import './styles.scss'
 
 const { Header: AntdHeader } = Layout
@@ -14,7 +13,6 @@ const Header: React.FC = () => {
   return (
     <AntdHeader className="header-container" style={{ padding: 0 }}>
       <div className="logo">
-        {logo && <img src={logo} alt="Logo" />}
         <span>铁匠云盘</span>
       </div>
       <Space className="theme-switcher">

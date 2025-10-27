@@ -49,8 +49,8 @@
     }
   }
 
-  .ant-menu-item-selected {
-    background-color: rgba(24, 144, 255, 0.15) !important;
+  .ant-menu-light {
+    background-color: none !important;
     color: var(--custom-primary-color) !important;
   }
 }
@@ -87,12 +87,13 @@
 .theme-switcher {
   display: flex;
   align-items: center;
+  margin-right: 20px;
 
   .ant-switch-checked {
     background-color: white;
   }
 
-  .ant-switch-checked .ant-switch-handle {
+  .ant-switch-checked {
     background-color: var(--custom-primary-color);
   }
 }
