@@ -1,0 +1,11 @@
+/* 去掉 antd Menu 的右边框 */
+.ant-menu-light.ant-menu-inline,
+.ant-menu-light.ant-menu-vertical {
+  border-inline-end: none !important;
+}
+
+/* 去掉 antd Menu 的背景色 */
+.ant-menu-light,
+.ant-menu-light > .ant-menu {
+  background: none !important;
+}

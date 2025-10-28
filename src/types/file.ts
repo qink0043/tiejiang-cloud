@@ -1,5 +1,6 @@
 // 定义文件类型
 export interface FileItem {
+  oss_url: string | undefined;
   id: string;
   name: string;
   type: 'file' | 'folder';

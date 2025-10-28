@@ -38,7 +38,7 @@
 }
 
 .main-menu {
-  .menu-item {
+  .ant-menu-item {
     height: 50px;
     display: flex;
     align-items: center;
@@ -48,10 +48,8 @@
       background-color: rgba(24, 144, 255, 0.08) !important;
     }
   }
-
-  .ant-menu-light {
-    background-color: none !important;
-    color: var(--custom-primary-color) !important;
+  .ant-menu-inline {
+    background-color: red !important;
   }
 }
 

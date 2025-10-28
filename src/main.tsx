@@ -4,13 +4,32 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { ConfigProvider, theme } from 'antd'
+import { Provider } from 'react-redux'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import 'antd/dist/reset.css'
 import '@ant-design/v5-patch-for-react-19'
 import './styles/theme.scss'
+import './styles/global.scss'
 import router from './routes'
 import { ThemeProvider, ThemeContext } from './contexts/ThemeContext'
-import { Provider } from 'react-redux'
 import store from './stores'
+
+// 创建 QueryClient 实例
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2, // 失败重试 2 次
+      staleTime: 30000, // 30秒内数据新鲜，不重新请求
+      gcTime: 300000, // 缓存 5 分钟 (之前叫 cacheTime)
+      refetchOnWindowFocus: false, // 窗口聚焦时不自动重新请求
+      refetchOnReconnect: true, // 网络重连时重新请求
+    },
+    mutations: {
+      retry: 1, // mutation 失败重试 1 次
+    },
+  },
+})
 
 const RootApp = () => {
   const { isDarkMode } = useContext(ThemeContext)
@@ -41,7 +60,13 @@ root.render(
   <StrictMode>
     <ThemeProvider>
       <Provider store={store}>
-        <RootApp />
+        <QueryClientProvider client={queryClient}>
+          <RootApp />
+          {/* 开发环境显示 React Query DevTools */}
+          {import.meta.env.DEV && (
+            <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+          )}
+        </QueryClientProvider>
       </Provider>
     </ThemeProvider>
   </StrictMode>,

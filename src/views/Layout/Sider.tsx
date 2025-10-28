@@ -27,7 +27,7 @@ const Sider: React.FC = () => {
     {
       key: '1',
       icon: <FileOutlined />,
-      label: '我的文件',
+      label: '我的图片',
       className: 'menu-item',
     },
   ]
