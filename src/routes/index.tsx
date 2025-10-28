@@ -5,21 +5,26 @@ import HomePage from '@/views/Home'
 import { createBrowserRouter } from 'react-router-dom'
 
 // 配置路由实例
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <Layout />,
+      children: [
+        {
+          index: true,
+          element: <HomePage />,
+        },
+      ],
+    },
+    {
+      path: '/login',
+      element: <LoginPage />,
+    },
+  ],
   {
-    path: '/',
-    element: <Layout />,
-    children: [
-      {
-        index: true,
-        element: <HomePage />,
-      },
-    ],
+    basename: '/cloud',
   },
-  {
-    path: '/login',
-    element: <LoginPage />,
-  },
-])
+)
 
 export default router
