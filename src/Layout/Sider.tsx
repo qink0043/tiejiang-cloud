@@ -34,7 +34,7 @@ const Sider: React.FC = () => {
     },
     {
       key: '/gallery',
-      icon: <FileOutlined />,
+      icon: <IconFont type='icon-tukuguanli' />,
       label: '公共图库',
       className: 'menu-item',
     },

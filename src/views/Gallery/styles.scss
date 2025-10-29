@@ -25,6 +25,15 @@
 }
 
 .gallery-container {
-  background-color: red;
-  height: 100px;
+  .masonry-grid {
+    display: flex;
+    margin-left: -16px;
+    /* gutter size offset */
+    width: auto;
+  }
+
+  .masonry-grid-column {
+    padding-left: 16px;
+    background-clip: padding-box;
+  }
 }

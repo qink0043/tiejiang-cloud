@@ -41,6 +41,8 @@ import {
 } from '@/hooks/useFiles'
 import { CSSTransition } from 'react-transition-group'
 import { useNavigate } from 'react-router-dom'
+import IconFont from '@/contexts/IconFontContext'
+import { uploadToPublicGallery } from '@/api/modules/publicGallery'
 
 const { Search } = Input
 
@@ -104,7 +106,7 @@ const HomePage: React.FC = () => {
   const createFolderMutation = useCreateFolder(currentPath)
   const deleteFileMutation = useDeleteFile(currentPath)
   const batchDeleteMutation = useBatchDeleteFiles(currentPath)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const [uploadProgress, setUploadProgress] = useState(0)
 
@@ -187,6 +189,17 @@ const HomePage: React.FC = () => {
     })
   }
 
+  // 处理上传到公共图库
+  const handleUploadToGallery = (fileId: string) => {
+    uploadToPublicGallery(fileId)
+      .then(() => {
+        message.success('上传到公共图库成功')
+      })
+      .catch(() => {
+        message.error('上传到公共图库失败')
+      })
+  }
+
   // 处理下载文件
   const handleDownload = (file: FileItem) => {
     message.success('下载成功')
@@ -249,6 +262,14 @@ const HomePage: React.FC = () => {
                 label: (
                   <span onClick={() => handleDelete(record.id)}>
                     <DeleteOutlined /> 删除
+                  </span>
+                ),
+              },
+              {
+                key: 'uploadToGallery',
+                label: (
+                  <span onClick={() => handleUploadToGallery(record.id)}>
+                    <IconFont type="icon-tukuguanli" /> 上传到公共图库
                   </span>
                 ),
               },
