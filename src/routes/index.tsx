@@ -1,9 +1,10 @@
-import Layout from '@/views/Layout/Layout'
+import Layout from '@/Layout/Layout'
 import LoginPage from '@/views/Login'
 import HomePage from '@/views/Home'
 
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import GalleryPage from '@/views/Gallery'
+import TransferPage from '@/views/Transfer'
 
 // 配置路由实例
 const router = createBrowserRouter(
@@ -24,6 +25,10 @@ const router = createBrowserRouter(
         {
           path: '/gallery',
           element: <GalleryPage />,
+        },
+        {
+          path: '/transfer',
+          element: <TransferPage />,
         },
       ],
     },

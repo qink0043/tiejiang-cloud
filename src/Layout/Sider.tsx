@@ -1,12 +1,13 @@
 import React, { useContext } from 'react'
-import { Layout, Avatar, Menu, Progress, Card, Typography } from 'antd'
+import { Layout, Menu, Progress, Card, Typography } from 'antd'
 import { FileOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
-import { ThemeContext } from '../../contexts/ThemeContext'
+import { ThemeContext } from '../contexts/ThemeContext'
 import type { StorageInfo } from '@/types'
 import { formatFileSize } from '@/utils'
 
 import { useNavigate, useLocation } from 'react-router-dom'
+import IconFont from '@/contexts/IconFontContext'
 
 const { Sider: AntdSider } = Layout
 const { Title, Text } = Typography
@@ -35,6 +36,12 @@ const Sider: React.FC = () => {
       key: '/gallery',
       icon: <FileOutlined />,
       label: '公共图库',
+      className: 'menu-item',
+    },
+    {
+      key: '/transfer',
+      icon: <IconFont type='icon-chuanshu' />,
+      label: '文件传输',
       className: 'menu-item',
     },
   ]

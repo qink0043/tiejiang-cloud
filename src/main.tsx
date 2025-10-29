@@ -1,9 +1,9 @@
 // src/main.tsx
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
-import { ConfigProvider, theme } from 'antd'
+import { ConfigProvider, FloatButton, Modal, QRCode, Space, theme } from 'antd'
 import { Provider } from 'react-redux'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -14,6 +14,7 @@ import './styles/global.scss'
 import router from './routes'
 import { ThemeProvider, ThemeContext } from './contexts/ThemeContext'
 import store from './stores'
+import { CustomerServiceOutlined } from '@ant-design/icons'
 
 // 创建 QueryClient 实例
 const queryClient = new QueryClient({
@@ -34,6 +35,12 @@ const queryClient = new QueryClient({
 const RootApp = () => {
   const { isDarkMode } = useContext(ThemeContext)
   const { defaultAlgorithm, darkAlgorithm } = theme
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // 点击联系我
+  const handleCallMeClick = () => {
+    setIsModalOpen(true)
+  }
 
   useEffect(() => {
     // 页面加载时和主题模式改变时，动态切换 body 上的类名
@@ -51,6 +58,32 @@ const RootApp = () => {
       }}
     >
       <RouterProvider router={router} />
+      <FloatButton
+        shape="circle"
+        type="primary"
+        style={{ insetInlineEnd: 94 }}
+        tooltip={<div>联系我</div>}
+        icon={<CustomerServiceOutlined />}
+        onClick={handleCallMeClick}
+      />
+      <Modal
+        title="联系我"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+      >
+        <Space direction="vertical">
+          <p>
+            QQ: <span>3208013769</span>
+          </p>
+          <p>
+            微信：<span>qink0043</span>
+          </p>
+          <p>
+            备注来意~
+          </p>
+        </Space>
+      </Modal>
     </ConfigProvider>
   )
 }

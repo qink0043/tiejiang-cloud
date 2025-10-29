@@ -1,13 +1,13 @@
 import React, { useContext } from 'react'
 import { Layout, Switch, Button, Avatar, Dropdown } from 'antd'
 import { BulbOutlined } from '@ant-design/icons'
-import { ThemeContext } from '../../contexts/ThemeContext'
+import { ThemeContext } from '../contexts/ThemeContext'
 import './styles.scss'
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState } from '@/stores/types/store'
 
 const { Header: AntdHeader } = Layout
-import IconFont from '../../contexts/IconFontContext'
+import IconFont from '../contexts/IconFontContext'
 import { logout } from '@/stores/modules/user'
 import { useNavigate } from 'react-router-dom'
 
