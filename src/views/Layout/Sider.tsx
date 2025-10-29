@@ -7,6 +7,7 @@ import type { StorageInfo } from '@/types'
 import { formatFileSize } from '@/utils'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/stores/types/store'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const { Sider: AntdSider } = Layout
 const { Title, Text } = Typography
@@ -22,15 +23,26 @@ const Sider: React.FC = () => {
   const { isDarkMode } = useContext(ThemeContext)
   const { userInfo } = useSelector((state: RootState) => state.user)
   const storagePercentage = (mockStorageInfo.used / mockStorageInfo.total) * 100
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const menuItems: MenuProps['items'] = [
     {
-      key: '1',
+      key: '/home',
       icon: <FileOutlined />,
-      label: '我的图片',
+      label: '我的文件',
+      className: 'menu-item',
+    },
+    {
+      key: '/gallery',
+      icon: <FileOutlined />,
+      label: '公共图库',
       className: 'menu-item',
     },
   ]
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    navigate(e.key) // 👈 直接用 key 跳转
+  }
 
   return (
     <AntdSider
@@ -77,8 +89,9 @@ const Sider: React.FC = () => {
         <Menu
           mode="inline"
           items={menuItems}
-          selectedKeys={['1']}
           className="main-menu"
+          onClick={handleMenuClick}
+          selectedKeys={[location.pathname]}
         />
       </div>
     </AntdSider>

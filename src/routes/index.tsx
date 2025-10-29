@@ -3,17 +3,22 @@ import LoginPage from '@/views/Login'
 import HomePage from '@/views/Home'
 
 import { createBrowserRouter } from 'react-router-dom'
+import GalleryPage from '@/views/Gallery'
 
 // 配置路由实例
 const router = createBrowserRouter(
   [
     {
-      path: '/',
+      path: '',
       element: <Layout />,
       children: [
         {
-          index: true,
+          path: '/home',
           element: <HomePage />,
+        },
+        {
+          path: '/gallery',
+          element: <GalleryPage />,
         },
       ],
     },

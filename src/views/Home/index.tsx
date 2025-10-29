@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   Card,
   Button,
@@ -32,10 +32,7 @@ import { formatFileSize } from '@/utils'
 import type { FileItem } from '@/types/file'
 import './styles.scss'
 import { useAppDispatch, useAppSelector } from '@/stores/hooks'
-import {
-  setViewMode,
-  setSearchKeyword,
-} from '@/stores/modules/files'
+import { setViewMode, setSearchKeyword } from '@/stores/modules/files'
 import {
   useFiles,
   useUploadFile,
@@ -43,7 +40,7 @@ import {
   useDeleteFile,
   useBatchDeleteFiles,
 } from '@/hooks/useFiles'
-import { getUserInfoAction } from '@/stores/modules/user'
+import { CSSTransition } from 'react-transition-group'
 
 const { Search } = Input
 
@@ -200,6 +197,7 @@ const HomePage: React.FC = () => {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
+      width: 500,
       render: (name: string, record: FileItem) => (
         <Space>
           {getFileIcon(record.type, record.extension)}
@@ -218,9 +216,15 @@ const HomePage: React.FC = () => {
       render: (size?: number) => (size ? formatFileSize(size) : '-'),
     },
     {
+      title: '创建时间',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (createdAt: string) => formatDate(createdAt),
+    },
+    {
       title: '修改时间',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
       render: (updatedAt: string) => formatDate(updatedAt),
     },
     {
@@ -263,106 +267,112 @@ const HomePage: React.FC = () => {
       </div>
     )
   }
-  useEffect(() => {
-    dispatch(getUserInfoAction())
-  }, [dispatch])
+
+  const HomePageRef = useRef(null)
   return (
-    <div className="home-container">
-      <div className="home-header">
-        <Space>
-          <Search
-            placeholder="搜索文件或文件夹"
-            allowClear
-            enterButton={<SearchOutlined />}
-            size="middle"
-            onSearch={handleSearch}
-            style={{ width: 300 }}
-          />
-          <Upload beforeUpload={handleUpload} showUploadList={false} multiple>
+    <CSSTransition
+      nodeRef={HomePageRef}
+      in={true}
+      timeout={300}
+      classNames="fade"
+    >
+      <div ref={HomePageRef} className="home-container">
+        <div className="home-header">
+          <Space>
+            <Search
+              placeholder="搜索文件或文件夹"
+              allowClear
+              enterButton={<SearchOutlined />}
+              size="middle"
+              onSearch={handleSearch}
+              style={{ width: 300 }}
+            />
+            <Upload beforeUpload={handleUpload} showUploadList={false} multiple>
+              <Button
+                type="primary"
+                icon={<UploadOutlined />}
+                loading={uploadFileMutation.isPending}
+              >
+                上传文件
+              </Button>
+            </Upload>
             <Button
-              type="primary"
-              icon={<UploadOutlined />}
-              loading={uploadFileMutation.isPending}
+              type="default"
+              icon={<FolderAddOutlined />}
+              onClick={handleCreateFolder}
+              loading={createFolderMutation.isPending}
             >
-              上传文件
+              新建文件夹
             </Button>
-          </Upload>
-          <Button
-            type="default"
-            icon={<FolderAddOutlined />}
-            onClick={handleCreateFolder}
-            loading={createFolderMutation.isPending}
+            {selectedFiles.length > 0 && (
+              <Button
+                danger
+                onClick={handleBatchDelete}
+                loading={batchDeleteMutation.isPending}
+              >
+                删除选中 ({selectedFiles.length})
+              </Button>
+            )}
+          </Space>
+
+          <Radio.Group
+            value={viewMode}
+            onChange={(e) => dispatch(setViewMode(e.target.value))}
+            buttonStyle="solid"
           >
-            新建文件夹
-          </Button>
-          {selectedFiles.length > 0 && (
-            <Button
-              danger
-              onClick={handleBatchDelete}
-              loading={batchDeleteMutation.isPending}
-            >
-              删除选中 ({selectedFiles.length})
-            </Button>
-          )}
-        </Space>
-
-        <Radio.Group
-          value={viewMode}
-          onChange={(e) => dispatch(setViewMode(e.target.value))}
-          buttonStyle="solid"
-        >
-          <Radio.Button value="list">
-            <UnorderedListOutlined /> 列表
-          </Radio.Button>
-          <Radio.Button value="gallery">
-            <AppstoreOutlined /> 图库
-          </Radio.Button>
-        </Radio.Group>
-      </div>
-
-      {isLoading ? (
-        <div className="loading-container">
-          <Spin size="large" tip="加载中..." />
+            <Radio.Button value="list">
+              <UnorderedListOutlined /> 列表
+            </Radio.Button>
+            <Radio.Button value="gallery">
+              <AppstoreOutlined /> 图库
+            </Radio.Button>
+          </Radio.Group>
         </div>
-      ) : viewMode === 'list' ? (
-        <Card className="file-list-card">
-          <Table
-            columns={columns}
-            dataSource={filteredFiles}
-            rowKey="id"
-            pagination={{ pageSize: 10 }}
-          />
-        </Card>
-      ) : (
-        <div className="gallery-view">
-          <Image.PreviewGroup>
-            <div className="masonry-grid">
-              {imageFiles.map((file) => (
-                <div key={file.id} className="masonry-item">
-                  <div className="image-card">
-                    <Image
-                      src={file.thumbnail || file.oss_url}
-                      alt={file.name}
-                      preview
-                      placeholder={<ImagePlaceholder />}
-                      onLoad={(e) => {
-                        const img = e.currentTarget as HTMLImageElement
-                        img.style.opacity = '1'
-                      }}
-                    />
+
+        {isLoading ? (
+          <div className="loading-container">
+            <Spin size="large" tip="加载中..." />
+          </div>
+        ) : viewMode === 'list' ? (
+          <Card className="file-list-card">
+            <Table
+              columns={columns}
+              dataSource={filteredFiles}
+              rowKey="id"
+              pagination={{ pageSize: 10 }}
+            />
+          </Card>
+        ) : (
+          <div className="gallery-view">
+            <Image.PreviewGroup>
+              <div className="masonry-grid">
+                {imageFiles.map((file) => (
+                  <div key={file.id} className="masonry-item">
+                    <div className="image-card">
+                      <Image
+                        src={file.thumbnail || file.oss_url}
+                        alt={file.name}
+                        preview
+                        placeholder={<ImagePlaceholder />}
+                        onLoad={(e) => {
+                          const img = e.currentTarget as HTMLImageElement
+                          img.style.opacity = '1'
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </Image.PreviewGroup>
-          {imageFiles.length === 0 && (
-            <div className="empty-gallery">
-              <p>暂无图片文件</p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+                ))}
+              </div>
+            </Image.PreviewGroup>
+            {imageFiles.length === 0 && (
+              <div className="empty-gallery">
+                <p>暂无图片文件</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </CSSTransition>
   )
 }
 

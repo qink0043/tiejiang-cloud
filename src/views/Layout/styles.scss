@@ -48,6 +48,7 @@
       background-color: rgba(24, 144, 255, 0.08) !important;
     }
   }
+
   .ant-menu-inline {
     background-color: red !important;
   }
@@ -75,6 +76,7 @@
   display: flex;
   align-items: center;
   height: 100%;
+  margin-left: 20px;
 
   img {
     height: 100%;
@@ -108,6 +110,33 @@
     }
   }
 }
+
+// 页面切换过渡动画 --- 进入
+.page-enter {
+  opacity: 0;
+  transform: scale(1.1);
+}
+
+// 页面切换过渡动画 --- 进入（被激活）
+.page-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 500ms, transform 500ms;
+}
+
+// 页面切换过渡动画 --- 离开
+.page-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+// 页面切换过渡动画 --- 离开（被激活）
+.page-exit-active {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 500ms, transform 500ms; 
+}
+
 
 // 响应式调整
 @media (max-width: 768px) {
