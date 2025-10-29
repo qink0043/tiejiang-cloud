@@ -79,7 +79,7 @@ service.interceptors.response.use(
       case 401:
         // 未授权,清除 token 并跳转到登录页
         localStorage.removeItem('token');
-        window.location.href = '/login';
+        window.location.href = '/cloud/login';
         throw new Error(message || '未授权,请重新登录');
 
       case 403:
@@ -116,7 +116,7 @@ service.interceptors.response.use(
         case 401:
           errorMessage = '未授权,请重新登录';
           localStorage.removeItem('token');
-          window.location.href = '/login';
+          window.location.href = '/cloud/login';
           break;
         case 403:
           errorMessage = '拒绝访问';
