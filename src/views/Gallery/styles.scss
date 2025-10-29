@@ -1,26 +1,26 @@
 // 页面切换过渡动画 --- 进入
 .fade-enter {
   opacity: 0;
-  transform: scale(1.1);
+  transform: translateY(10px);
 }
 
 // 页面切换过渡动画 --- 进入（被激活）
 .fade-enter-active {
   opacity: 1;
-  transform: scale(1);
+  transform: translateY(0);
   transition: opacity 300ms, transform 300ms;
 }
 
 // 页面切换过渡动画 --- 离开
 .fade-exit {
   opacity: 1;
-  transform: scale(1);
+  transform: translateY(0);
 }
 
 // 页面切换过渡动画 --- 离开（被激活）
 .fade-exit-active {
   opacity: 0;
-  transform: scale(0.9);
+  transform: translateY(10px);
   transition: opacity 300ms, transform 300ms;
 }
 

@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react'
 import {
-  Card,
   Button,
   Input,
   Upload,
@@ -41,6 +40,7 @@ import {
   useBatchDeleteFiles,
 } from '@/hooks/useFiles'
 import { CSSTransition } from 'react-transition-group'
+import { useNavigate } from 'react-router-dom'
 
 const { Search } = Input
 
@@ -104,6 +104,7 @@ const HomePage: React.FC = () => {
   const createFolderMutation = useCreateFolder(currentPath)
   const deleteFileMutation = useDeleteFile(currentPath)
   const batchDeleteMutation = useBatchDeleteFiles(currentPath)
+  const navigate = useNavigate();
 
   const [uploadProgress, setUploadProgress] = useState(0)
 
@@ -263,7 +264,7 @@ const HomePage: React.FC = () => {
     return (
       <div className="error-container">
         <p>加载失败: {(error as Error).message}</p>
-        <Button onClick={() => window.location.reload()}>重新加载</Button>
+        <Button onClick={() => navigate(0)}>重新加载</Button>
       </div>
     )
   }
@@ -329,48 +330,46 @@ const HomePage: React.FC = () => {
           </Radio.Group>
         </div>
 
-        {isLoading ? (
-          <div className="loading-container">
-            <Spin size="large" tip="加载中..." />
-          </div>
-        ) : viewMode === 'list' ? (
-          <Card className="file-list-card">
-            <Table
-              columns={columns}
-              dataSource={filteredFiles}
-              rowKey="id"
-              pagination={{ pageSize: 10 }}
-            />
-          </Card>
-        ) : (
-          <div className="gallery-view">
-            <Image.PreviewGroup>
-              <div className="masonry-grid">
-                {imageFiles.map((file) => (
-                  <div key={file.id} className="masonry-item">
-                    <div className="image-card">
-                      <Image
-                        src={file.thumbnail || file.oss_url}
-                        alt={file.name}
-                        preview
-                        placeholder={<ImagePlaceholder />}
-                        onLoad={(e) => {
-                          const img = e.currentTarget as HTMLImageElement
-                          img.style.opacity = '1'
-                        }}
-                      />
+        <Spin spinning={isLoading} size="large" tip="加载中...">
+          {viewMode === 'list' ? (
+            <div className="file-list-container">
+              <Table
+                columns={columns}
+                dataSource={filteredFiles}
+                rowKey="id"
+                pagination={{ pageSize: 10 }}
+              />
+            </div>
+          ) : (
+            <div className="gallery-view">
+              <Image.PreviewGroup>
+                <div className="masonry-grid">
+                  {imageFiles.map((file) => (
+                    <div key={file.id} className="masonry-item">
+                      <div className="image-card">
+                        <Image
+                          src={file.thumbnail || file.oss_url}
+                          alt={file.name}
+                          preview
+                          placeholder={<ImagePlaceholder />}
+                          onLoad={(e) => {
+                            const img = e.currentTarget as HTMLImageElement
+                            img.style.opacity = '1'
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </Image.PreviewGroup>
-            {imageFiles.length === 0 && (
-              <div className="empty-gallery">
-                <p>暂无图片文件</p>
-              </div>
-            )}
-          </div>
-        )}
+                  ))}
+                </div>
+              </Image.PreviewGroup>
+              {imageFiles.length === 0 && (
+                <div className="empty-gallery">
+                  <p>暂无图片文件</p>
+                </div>
+              )}
+            </div>
+          )}
+        </Spin>
       </div>
     </CSSTransition>
   )

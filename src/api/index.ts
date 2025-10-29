@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios';
+import axios, { type AxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios';
 import type { CustomAxiosInstance } from './types';
 
 /**
@@ -79,7 +79,7 @@ service.interceptors.response.use(
       case 401:
         // 未授权,清除 token 并跳转到登录页
         localStorage.removeItem('token');
-        window.location.href = '/cloud/login';
+        window.location.replace('/cloud/login');
         throw new Error(message || '未授权,请重新登录');
 
       case 403:
@@ -115,8 +115,8 @@ service.interceptors.response.use(
           break;
         case 401:
           errorMessage = '未授权,请重新登录';
-          localStorage.removeItem('token');
-          window.location.href = '/cloud/login';
+          
+          window.location.href = '/cloud/login';  
           break;
         case 403:
           errorMessage = '拒绝访问';

@@ -5,8 +5,7 @@ import type { MenuProps } from 'antd'
 import { ThemeContext } from '../../contexts/ThemeContext'
 import type { StorageInfo } from '@/types'
 import { formatFileSize } from '@/utils'
-import { useSelector } from 'react-redux'
-import type { RootState } from '@/stores/types/store'
+
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const { Sider: AntdSider } = Layout
@@ -21,7 +20,6 @@ const mockStorageInfo: StorageInfo = {
 
 const Sider: React.FC = () => {
   const { isDarkMode } = useContext(ThemeContext)
-  const { userInfo } = useSelector((state: RootState) => state.user)
   const storagePercentage = (mockStorageInfo.used / mockStorageInfo.total) * 100
   const navigate = useNavigate()
   const location = useLocation()
@@ -41,7 +39,7 @@ const Sider: React.FC = () => {
     },
   ]
   const handleMenuClick: MenuProps['onClick'] = (e) => {
-    navigate(e.key) // 👈 直接用 key 跳转
+    navigate(e.key)
   }
 
   return (
@@ -60,13 +58,6 @@ const Sider: React.FC = () => {
     >
       {/* 用户信息和存储空间 */}
       <div className="sider-header">
-        <div className="user-info">
-          <Avatar size={48} src={userInfo?.avatar} />
-          <Title level={5} className="username">
-            {userInfo?.username}
-          </Title>
-        </div>
-
         <Card className="storage-card" size="small">
           <Title level={5}>存储空间</Title>
           <Progress

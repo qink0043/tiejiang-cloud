@@ -18,7 +18,7 @@ export const loginAction = createAsyncThunk(
       const res = await login(loginForm)
       return res
     } catch (err: any) {
-      // axios 拦截器抛出的 error 通常有 message
+      message.error(err.message || '登录失败')
       return thunkAPI.rejectWithValue(err.message || '登录失败')
     }
   },
@@ -29,10 +29,11 @@ export const getUserInfoAction = createAsyncThunk(
   'user/getUserInfo',
   async (_, thunkAPI) => {
     try {
-      console.log('store调用');
-      
       return await getUserInfo()
     } catch (err: any) {
+      console.log('获取用户信息失败:', err);
+      
+      message.error(err.message || '获取用户信息失败')
       return thunkAPI.rejectWithValue(err.message || '获取用户信息失败')
     }
   },
