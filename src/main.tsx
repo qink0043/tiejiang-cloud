@@ -79,9 +79,7 @@ const RootApp = () => {
           <p>
             微信：<span>qink0043</span>
           </p>
-          <p>
-            备注来意~
-          </p>
+          <p>备注来意~</p>
         </Space>
       </Modal>
     </ConfigProvider>

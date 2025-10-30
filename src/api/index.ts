@@ -1,21 +1,25 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios';
-import type { CustomAxiosInstance } from './types';
+import axios, {
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type AxiosError,
+} from 'axios'
+import type { CustomAxiosInstance } from './types'
 
 /**
  * 响应数据接口定义
  */
 interface ResponseData<T = any> {
-  code: number;
-  message: string;
-  data: T;
+  code: number
+  message: string
+  data: T
 }
 
 /**
  * 自定义请求配置
  */
 interface CustomRequestConfig extends AxiosRequestConfig {
-  skipErrorHandler?: boolean; // 是否跳过错误处理
-  showLoading?: boolean; // 是否显示loading
+  skipErrorHandler?: boolean // 是否跳过错误处理
+  showLoading?: boolean // 是否显示loading
 }
 
 /**
@@ -27,7 +31,7 @@ const service: CustomAxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json;charset=utf-8',
   },
-});
+})
 
 /**
  * 请求拦截器
@@ -35,11 +39,11 @@ const service: CustomAxiosInstance = axios.create({
 service.interceptors.request.use(
   (config: any) => {
     // 从 localStorage 获取 token
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token')
 
     // 如果 token 存在,添加到请求头
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`
     }
 
     // 显示 loading (可选)
@@ -51,51 +55,53 @@ service.interceptors.request.use(
     // 可以在这里添加其他自定义头部
     // config.headers['X-Custom-Header'] = 'custom-value';
 
-    return config;
+    return config
   },
   (error: AxiosError) => {
     // 请求错误处理
-    console.error('请求错误:', error);
-    return Promise.reject(error);
-  }
-);
+    console.error('请求错误:', error)
+    return Promise.reject(error)
+  },
+)
 
 /**
  * 响应拦截器
  */
 service.interceptors.response.use(
-  <T>(response: AxiosResponse<{ code: number; message: string; data: T }>): T => {
+  <T>(
+    response: AxiosResponse<{ code: number; message: string; data: T }>,
+  ): T => {
     // 隐藏 loading
     // store.dispatch(setLoading(false));
 
-    const { code, message, data } = response.data;
+    const { code, message, data } = response.data
 
     // 根据自定义的业务状态码进行处理
     switch (code) {
       case 200:
         // 请求成功
-        return data;
+        return data
 
       case 401:
         // 未授权,清除 token 并跳转到登录页
-        localStorage.removeItem('token');
-        window.location.replace('/cloud/login');
-        throw new Error(message || '未授权,请重新登录');
+        localStorage.removeItem('token')
+        window.location.replace('/cloud/login')
+        throw new Error(message || '未授权,请重新登录')
 
       case 403:
         // 无权限
-        console.error('无权限访问:', message);
-        throw new Error(message || '无权限访问');
+        console.error('无权限访问:', message)
+        throw new Error(message || '无权限访问')
 
       case 500:
         // 服务器错误
-        console.error('服务器错误:', message);
-        throw new Error(message || '服务器错误');
+        console.error('服务器错误:', message)
+        throw new Error(message || '服务器错误')
 
       default:
         // 其他错误
-        console.error('请求失败:', message);
-        throw new Error(message || '请求失败');
+        console.error('请求失败:', message)
+        throw new Error(message || '请求失败')
     }
   },
   (error: AxiosError<ResponseData>) => {
@@ -103,64 +109,64 @@ service.interceptors.response.use(
     // store.dispatch(setLoading(false));
 
     // 处理 HTTP 错误
-    let errorMessage = '请求失败';
+    let errorMessage = '请求失败'
 
     if (error.response) {
       // 服务器返回了错误响应
-      const { status, data } = error.response;
+      const { status, data } = error.response
 
       switch (status) {
         case 400:
-          errorMessage = data?.message || '请求参数错误';
-          break;
+          errorMessage = data?.message || '请求参数错误'
+          break
         case 401:
-          errorMessage = '未授权,请重新登录';
-          
-          window.location.href = '/cloud/login';  
-          break;
+          errorMessage = '未授权,请重新登录'
+
+          window.location.href = '/cloud/login'
+          break
         case 403:
-          errorMessage = '拒绝访问';
-          break;
+          errorMessage = '拒绝访问'
+          break
         case 404:
-          errorMessage = '请求的资源不存在';
-          break;
+          errorMessage = '请求的资源不存在'
+          break
         case 500:
-          errorMessage = '服务器内部错误';
-          break;
+          errorMessage = '服务器内部错误'
+          break
         case 502:
-          errorMessage = '网关错误';
-          break;
+          errorMessage = '网关错误'
+          break
         case 503:
-          errorMessage = '服务不可用';
-          break;
+          errorMessage = '服务不可用'
+          break
         case 504:
-          errorMessage = '网关超时';
-          break;
+          errorMessage = '网关超时'
+          break
         default:
-          errorMessage = data?.message || `请求失败(${status})`;
+          errorMessage = data?.message || `请求失败(${status})`
       }
     } else if (error.request) {
       // 请求已发送但没有收到响应
       if (error.message.includes('timeout')) {
-        errorMessage = '请求超时,请稍后重试';
+        errorMessage = '请求超时,请稍后重试'
       } else if (error.message.includes('Network Error')) {
-        errorMessage = '网络连接失败,请检查网络设置';
+        errorMessage = '网络连接失败,请检查网络设置'
       } else {
-        errorMessage = '网络错误,请稍后重试';
+        errorMessage = '网络错误,请稍后重试'
       }
     } else {
       // 请求配置出错
-      errorMessage = error.message || '请求配置错误';
+      errorMessage = error.message || '请求配置错误'
     }
 
-    console.error('响应错误:', errorMessage);
+    console.error('响应错误:', errorMessage)
 
     // 可以在这里调用全局提示组件
     // message.error(errorMessage);
 
-    return Promise.reject(error);
-  }
-);
+    return Promise.reject(error)
+  },
+)
 
 /**
  * 封装的请求方法
@@ -170,11 +176,19 @@ class HttpRequest {
     return service.get<any, T>(url, config)
   }
 
-  post<T = any>(url: string, data?: any, config?: CustomRequestConfig): Promise<T> {
+  post<T = any>(
+    url: string,
+    data?: any,
+    config?: CustomRequestConfig,
+  ): Promise<T> {
     return service.post<any, T>(url, data, config)
   }
 
-  put<T = any>(url: string, data?: any, config?: CustomRequestConfig): Promise<T> {
+  put<T = any>(
+    url: string,
+    data?: any,
+    config?: CustomRequestConfig,
+  ): Promise<T> {
     return service.put<any, T>(url, data, config)
   }
 
@@ -182,13 +196,17 @@ class HttpRequest {
     return service.delete<any, T>(url, config)
   }
 
-  patch<T = any>(url: string, data?: any, config?: CustomRequestConfig): Promise<T> {
+  patch<T = any>(
+    url: string,
+    data?: any,
+    config?: CustomRequestConfig,
+  ): Promise<T> {
     return service.patch<any, T>(url, data, config)
   }
 }
 
 // 导出实例
-export const http = new HttpRequest();
+export const http = new HttpRequest()
 
 // 导出 axios 实例(用于特殊场景)
-export default service;
+export default service

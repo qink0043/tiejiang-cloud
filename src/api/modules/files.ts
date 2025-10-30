@@ -42,7 +42,9 @@ export const fileApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: (progressEvent) => {
         if (params.onProgress && progressEvent.total) {
-          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total,
+          )
           params.onProgress(percent)
         }
       },

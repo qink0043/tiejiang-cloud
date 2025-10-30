@@ -11,7 +11,8 @@ export const FILE_QUERY_KEYS = {
   list: (path: string) => [...FILE_QUERY_KEYS.lists(), path] as const,
   details: () => [...FILE_QUERY_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...FILE_QUERY_KEYS.details(), id] as const,
-  search: (keyword: string) => [...FILE_QUERY_KEYS.all, 'search', keyword] as const,
+  search: (keyword: string) =>
+    [...FILE_QUERY_KEYS.all, 'search', keyword] as const,
 }
 
 /**
@@ -64,7 +65,7 @@ export const useUploadFile = (path: string) => {
         (oldFiles) => {
           if (!oldFiles) return [newFile]
           return [newFile, ...oldFiles]
-        }
+        },
       )
       message.success('上传成功')
     },
@@ -88,7 +89,7 @@ export const useCreateFolder = (path: string) => {
         (oldFiles) => {
           if (!oldFiles) return [newFolder]
           return [newFolder, ...oldFiles]
-        }
+        },
       )
       message.success('文件夹创建成功')
     },
@@ -113,7 +114,7 @@ export const useDeleteFile = (path: string) => {
         (oldFiles) => {
           if (!oldFiles) return []
           return oldFiles.filter((file) => file.id !== fileId)
-        }
+        },
       )
       message.success('删除成功')
     },
@@ -137,7 +138,7 @@ export const useBatchDeleteFiles = (path: string) => {
         (oldFiles) => {
           if (!oldFiles) return []
           return oldFiles.filter((file) => !fileIds.includes(file.id))
-        }
+        },
       )
       message.success(`已删除 ${fileIds.length} 个文件`)
     },
@@ -162,9 +163,9 @@ export const useRenameFile = (path: string) => {
         (oldFiles) => {
           if (!oldFiles) return []
           return oldFiles.map((file) =>
-            file.id === updatedFile.id ? updatedFile : file
+            file.id === updatedFile.id ? updatedFile : file,
           )
-        }
+        },
       )
       message.success('重命名成功')
     },
@@ -181,8 +182,13 @@ export const useMoveFile = (sourcePath: string) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ fileId, targetPath }: { fileId: string; targetPath: string }) =>
-      fileApi.moveFile({ fileId, targetPath }),
+    mutationFn: ({
+      fileId,
+      targetPath,
+    }: {
+      fileId: string
+      targetPath: string
+    }) => fileApi.moveFile({ fileId, targetPath }),
     onSuccess: (_, { fileId, targetPath }) => {
       // 从源路径移除
       queryClient.setQueryData<FileItem[]>(
@@ -190,10 +196,12 @@ export const useMoveFile = (sourcePath: string) => {
         (oldFiles) => {
           if (!oldFiles) return []
           return oldFiles.filter((file) => file.id !== fileId)
-        }
+        },
       )
       // 使目标路径缓存失效
-      queryClient.invalidateQueries({ queryKey: FILE_QUERY_KEYS.list(targetPath) })
+      queryClient.invalidateQueries({
+        queryKey: FILE_QUERY_KEYS.list(targetPath),
+      })
       message.success('移动成功')
     },
     onError: (error: any) => {

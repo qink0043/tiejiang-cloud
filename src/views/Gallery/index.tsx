@@ -22,6 +22,7 @@ const GalleryPage: React.FC = () => {
       initialPageParam: 1,
       queryFn: async ({ pageParam = 1 }) => {
         const res = await getPublicGalleryList(pageParam, PAGE_SIZE)
+        // 现在 res 就是 { list: [...], pagination: {...} }
         return res
       },
       getNextPageParam: (lastPage) => {
@@ -29,8 +30,8 @@ const GalleryPage: React.FC = () => {
         const nextPage = pagination.page + 1
         return nextPage <= pagination.totalPages ? nextPage : undefined
       },
-      staleTime: 1000 * 60 * 5, // 缓存5分钟
-      gcTime: 1000 * 60 * 30, // 30分钟不使用才清理
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
     })
 
   // -------------------------------
@@ -50,7 +51,8 @@ const GalleryPage: React.FC = () => {
     return () => observer.disconnect()
   }, [bottomRef, hasNextPage, isFetchingNextPage])
 
-  const allImages = data?.pages.flatMap((page) => page.data) ?? []
+  // 从 list 中获取图片数组
+  const allImages = data?.pages.flatMap((page) => page.list) ?? []
 
   // -------------------------------
   // Masonry 瀑布流配置
@@ -72,7 +74,11 @@ const GalleryPage: React.FC = () => {
         <div style={{ padding: '20px' }}>
           <h2 style={{ marginBottom: '16px' }}>公共图库</h2>
 
-          {status === 'pending' && <Spin tip="加载中..." />}
+          {status === 'pending' && (
+            <Spin tip="加载中...">
+              <div style={{ height: 100 }} />
+            </Spin>
+          )}
 
           <Masonry
             breakpointCols={breakpointColumnsObj}
@@ -105,7 +111,7 @@ const GalleryPage: React.FC = () => {
           <div ref={bottomRef} style={{ textAlign: 'center', padding: 20 }}>
             {isFetchingNextPage ? (
               <Spin tip="加载更多..." />
-            ) : !hasNextPage ? (
+            ) : !hasNextPage && status !== 'pending' ? (
               <span style={{ color: '#999' }}>已加载全部图片</span>
             ) : (
               <span style={{ color: '#ccc' }}>下拉加载更多</span>

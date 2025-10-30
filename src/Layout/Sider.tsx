@@ -34,13 +34,13 @@ const Sider: React.FC = () => {
     },
     {
       key: '/gallery',
-      icon: <IconFont type='icon-tukuguanli' />,
+      icon: <IconFont type="icon-tukuguanli" />,
       label: '公共图库',
       className: 'menu-item',
     },
     {
       key: '/transfer',
-      icon: <IconFont type='icon-chuanshu' />,
+      icon: <IconFont type="icon-chuanshu" />,
       label: '文件传输',
       className: 'menu-item',
     },

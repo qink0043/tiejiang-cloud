@@ -31,8 +31,8 @@ export const getUserInfoAction = createAsyncThunk(
     try {
       return await getUserInfo()
     } catch (err: any) {
-      console.log('获取用户信息失败:', err);
-      
+      console.log('获取用户信息失败:', err)
+
       message.error(err.message || '获取用户信息失败')
       return thunkAPI.rejectWithValue(err.message || '获取用户信息失败')
     }

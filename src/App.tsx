@@ -39,7 +39,6 @@ const App = () => {
           </Button>
         </Space>
       </div>
-      
     </ConfigProvider>
   )
 }
