@@ -18,7 +18,6 @@ export const loginAction = createAsyncThunk(
       const res = await login(loginForm)
       return res
     } catch (err: any) {
-      message.error(err.response?.data?.message || '登录失败')
       return thunkAPI.rejectWithValue(err.response?.data?.message || '登录失败')
     }
   },
@@ -71,16 +70,12 @@ const userSlice = createSlice({
           localStorage.setItem('token', token)
         }
       })
-      .addCase(loginAction.rejected, (state, action) => {
+      .addCase(loginAction.rejected, (state) => {
         state.loginLoading = false
-        message.error(action.payload as string)
       })
       // 获取用户信息
       .addCase(getUserInfoAction.fulfilled, (state, action) => {
         state.userInfo = (action.payload as UserInfo) || ({} as UserInfo)
-      })
-      .addCase(getUserInfoAction.rejected, (_, action) => {
-        message.error(action.payload as string)
       })
   },
 })

@@ -4,6 +4,7 @@ import axios, {
   type AxiosError,
 } from 'axios'
 import type { CustomAxiosInstance } from './types'
+import { message } from 'antd'
 
 /**
  * 响应数据接口定义
@@ -113,6 +114,8 @@ service.interceptors.response.use(
 
     if (error.response) {
       // 服务器返回了错误响应
+      console.log('服务器返回错误响应:', error.response);
+      
       const { status, data } = error.response
 
       switch (status) {
@@ -120,27 +123,27 @@ service.interceptors.response.use(
           errorMessage = data?.message || '请求参数错误'
           break
         case 401:
-          errorMessage = '未授权,请重新登录'
+          errorMessage =  data?.message || '未授权,请重新登录'
 
           window.location.href = '/cloud/login'
           break
         case 403:
-          errorMessage = '拒绝访问'
+          errorMessage = data?.message || '拒绝访问'
           break
         case 404:
-          errorMessage = '请求的资源不存在'
+          errorMessage = data?.message || '请求的资源不存在'
           break
         case 500:
-          errorMessage = '服务器内部错误'
+          errorMessage = data?.message || '服务器内部错误'
           break
         case 502:
-          errorMessage = '网关错误'
+          errorMessage = data?.message || '网关错误'
           break
         case 503:
-          errorMessage = '服务不可用'
+          errorMessage = data?.message || '服务不可用'
           break
         case 504:
-          errorMessage = '网关超时'
+          errorMessage = data?.message || '网关超时'
           break
         default:
           errorMessage = data?.message || `请求失败(${status})`
@@ -161,8 +164,7 @@ service.interceptors.response.use(
 
     console.error('响应错误:', errorMessage)
 
-    // 可以在这里调用全局提示组件
-    // message.error(errorMessage);
+    message.error(errorMessage);
 
     return Promise.reject(error)
   },
