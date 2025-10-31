@@ -18,8 +18,8 @@ export const loginAction = createAsyncThunk(
       const res = await login(loginForm)
       return res
     } catch (err: any) {
-      message.error(err.message || '登录失败')
-      return thunkAPI.rejectWithValue(err.message || '登录失败')
+      message.error(err.response?.data?.message || '登录失败')
+      return thunkAPI.rejectWithValue(err.response?.data?.message || '登录失败')
     }
   },
 )
@@ -31,10 +31,10 @@ export const getUserInfoAction = createAsyncThunk(
     try {
       return await getUserInfo()
     } catch (err: any) {
-      console.log('获取用户信息失败:', err)
-
-      message.error(err.message || '获取用户信息失败')
-      return thunkAPI.rejectWithValue(err.message || '获取用户信息失败')
+      message.error(err.response?.data?.message || '获取用户信息失败')
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || '获取用户信息失败',
+      )
     }
   },
 )

@@ -196,7 +196,7 @@ const HomePage: React.FC = () => {
         message.success('上传到公共图库成功')
       })
       .catch((err) => {
-        message.error(err.response.data.msg)
+        message.error(err.response.data.message)
       })
   }
 
