@@ -18,7 +18,7 @@ import type { LoginForm } from '@/types'
 import type { EmailRegisterForm, UsernameRegisterForm } from '@/types/user'
 import {
   emailRegister,
-  getEmailCaptcha,
+  getEmailVerificationCode,
   usernameRegister,
 } from '@/api/modules/user'
 import { useAppDispatch, useAppSelector } from '@/stores/hooks'
@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
     'email' | 'username' | 'phone' | 'qq' | ''
   >('')
   // 是否已发送验证码
-  const [isCaptchaSent, setIsCaptchaSent] = useState(false)
+  const [isVerificationCodeSent, setIsVerificationCodeSent] = useState(false)
   // 邮箱后缀
   const [emailSuffix, setEmailSuffix] = useState('@qq.com')
   // 登录表单
@@ -42,13 +42,14 @@ const LoginPage: React.FC = () => {
     emailOrUsername: '',
     password: '',
   })
+  const [emailForm] = Form.useForm()
   // 邮箱注册表单
   const [emailRegisterForm, setEmailRegisterForm] = useState<EmailRegisterForm>(
     {
       email: '',
       password: '',
       confirmPassword: '',
-      captcha: '',
+      verificationCode: '',
     },
   )
   // 用户名注册表单
@@ -72,6 +73,7 @@ const LoginPage: React.FC = () => {
     console.log('Failed:', errorInfo)
   }
   const onRegisterFinishFailed = (errorInfo: any) => {
+    console.log('是否发送了验证码:', isVerificationCodeSent)
     console.log('Failed:', errorInfo)
   }
   // 切换登陆注册清空表单
@@ -85,53 +87,39 @@ const LoginPage: React.FC = () => {
       email: '',
       password: '',
       confirmPassword: '',
-      captcha: '',
+      verificationCode: '',
+    })
+  }
+
+  // 发送验证码
+  const sendVerificationCode = async () => {
+    // 验证邮箱字段
+    await emailForm.validateFields(['email'])
+    const values = emailForm.getFieldsValue()
+    const fullEmail = `${values.email}${emailSuffix}`
+    getEmailVerificationCode(fullEmail).then(() => {
+      message.success('验证码已发送！')
+      setIsVerificationCodeSent(true)
     })
   }
 
   // 邮箱注册
   const onEmailRegisterFinish = async (values: EmailRegisterForm) => {
     console.log(values)
+    console.log('是否发送了验证码:', isVerificationCodeSent)
+    const fullEmail = `${values.email}${emailSuffix}`
     // 如果发送过验证码
-    if (isCaptchaSent) {
-      try {
-        const res = await emailRegister(values)
-        if (res.data.code === 200) {
-          // 注册
-        } else {
-          throw new Error(res.data.message)
-        }
-      } catch (error: any) {
-        message.open({
-          type: 'error',
-          content: error.response.data.message,
-        })
-        return
-      }
-      return
-    } else {
-      // 发送验证码
-      try {
-        values.email = `${values.email}${emailSuffix}`
-        console.log(values)
-        const res = await getEmailCaptcha(values.email)
-        if (res.data.code === 200) {
-          message.open({
-            type: 'success',
-            content: '验证码已发送！',
-          })
-          setIsCaptchaSent(true)
-        } else {
-          throw new Error(res.data.message)
-        }
-      } catch (error: any) {
-        message.open({
-          type: 'error',
-          content: error.response.data.message,
-        })
-      }
+    if (isVerificationCodeSent) {
+      await emailRegister({
+        ...values,
+        email: fullEmail,
+      }).then(() => {
+        message.success('注册成功！')
+        navigate('/login')
+      })
     }
   }
+
   // 用户名注册
   const onUsernameRegisterFinish = async (values: UsernameRegisterForm) => {
     console.log(values)
@@ -305,6 +293,7 @@ const LoginPage: React.FC = () => {
               {/* 邮箱注册 */}
               {registerType === 'email' && (
                 <Form
+                  form={emailForm}
                   validateTrigger={'onBlur'}
                   onFinish={onEmailRegisterFinish}
                   onFinishFailed={onRegisterFinishFailed}
@@ -320,7 +309,7 @@ const LoginPage: React.FC = () => {
                     />
                   </Form.Item>
                   <Form.Item
-                    name="captcha"
+                    name="verificationCode"
                     rules={[{ required: true, message: '请输入验证码!' }]}
                   >
                     <Input.OTP
@@ -341,15 +330,20 @@ const LoginPage: React.FC = () => {
                     <Input size="large" placeholder="确认密码" />
                   </Form.Item>
                   <Form.Item>
-                    <Button type="primary" htmlType="submit" size="large" block>
-                      {isCaptchaSent ? '注册' : '获取验证码'}
+                    <Button
+                      type="primary"
+                      onClick={() => sendVerificationCode()}
+                      size="large"
+                      block
+                    >
+                      {isVerificationCodeSent ? '重新获取验证码' : '获取验证码'}
                     </Button>
                   </Form.Item>
-                  {isCaptchaSent && (
-                    <Button type="link" size="large">
-                      重新获取验证码
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit" size="large" block>
+                      注册
                     </Button>
-                  )}
+                  </Form.Item>
                 </Form>
               )}
               {/* 用户名注册 */}

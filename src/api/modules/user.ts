@@ -17,7 +17,7 @@ export const getUserInfo = () => {
 }
 
 // 获取邮箱验证码
-export const getEmailCaptcha = (email: string): Promise<Response> => {
+export const getEmailVerificationCode = (email: string): Promise<Response> => {
   return http.post<Response>('/email/send-code', { email })
 }
 

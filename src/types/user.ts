@@ -24,7 +24,7 @@ export interface EmailRegisterForm {
   email: string
   password: string
   confirmPassword: string
-  captcha: string
+  verificationCode: string
 }
 
 export interface UsernameRegisterForm {
