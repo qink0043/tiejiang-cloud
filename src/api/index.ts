@@ -114,8 +114,8 @@ service.interceptors.response.use(
 
     if (error.response) {
       // 服务器返回了错误响应
-      console.log('服务器返回错误响应:', error.response);
-      
+      console.log('服务器返回错误响应:', error.response)
+
       const { status, data } = error.response
 
       switch (status) {
@@ -123,7 +123,7 @@ service.interceptors.response.use(
           errorMessage = data?.message || '请求参数错误'
           break
         case 401:
-          errorMessage =  data?.message || '未授权,请重新登录'
+          errorMessage = data?.message || '未授权,请重新登录'
 
           window.location.href = '/cloud/login'
           break
@@ -164,7 +164,7 @@ service.interceptors.response.use(
 
     console.error('响应错误:', errorMessage)
 
-    message.error(errorMessage);
+    message.error(errorMessage)
 
     return Promise.reject(error)
   },

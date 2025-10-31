@@ -115,7 +115,15 @@ const LoginPage: React.FC = () => {
         email: fullEmail,
       }).then(() => {
         message.success('注册成功！')
-        navigate('/login')
+        onLoginFinish({
+          emailOrUsername: fullEmail,
+          password: values.password,
+        })
+      })
+    } else {
+      message.open({
+        type: 'error',
+        content: '请先发送验证码！',
       })
     }
   }
@@ -123,23 +131,17 @@ const LoginPage: React.FC = () => {
   // 用户名注册
   const onUsernameRegisterFinish = async (values: UsernameRegisterForm) => {
     console.log(values)
-    try {
-      const res = await usernameRegister(values)
-      if (res.data.code === 200) {
-        message.open({
-          type: 'success',
-          content: '注册成功！',
-        })
-      } else {
-        throw new Error(res.data.message)
-      }
-    } catch (error: any) {
+
+    await usernameRegister(values).then(() => {
       message.open({
-        type: 'error',
-        content: error.response.data.message,
+        type: 'success',
+        content: '注册成功！',
       })
-      return
-    }
+      onLoginFinish({
+        emailOrUsername: values.username,
+        password: values.password,
+      })
+    })
   }
 
   // 可供选择的邮箱后缀
