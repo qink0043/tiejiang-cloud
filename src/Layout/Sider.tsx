@@ -3,25 +3,21 @@ import { Layout, Menu, Progress, Card, Typography } from 'antd'
 import { FileOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { ThemeContext } from '../contexts/ThemeContext'
-import type { StorageInfo } from '@/types'
+import type { RootState } from '@/stores/types/store'
 import { formatFileSize } from '@/utils'
-
 import { useNavigate, useLocation } from 'react-router-dom'
 import IconFont from '@/contexts/IconFontContext'
+import { useSelector } from 'react-redux'
 
 const { Sider: AntdSider } = Layout
 const { Title, Text } = Typography
 
-// 模拟存储信息
-const mockStorageInfo: StorageInfo = {
-  total: 10737418240, // 10GB
-  used: 3221225472, // 3GB
-  free: 7516192768, // 7GB
-}
-
 const Sider: React.FC = () => {
   const { isDarkMode } = useContext(ThemeContext)
-  const storagePercentage = (mockStorageInfo.used / mockStorageInfo.total) * 100
+  const { userInfo } = useSelector((state: RootState) => state.user)
+  const storagePercentage = Math.round(
+    ((userInfo?.storage_used || 0) / (userInfo?.storage_quota || 0)) * 100,
+  )
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -76,8 +72,8 @@ const Sider: React.FC = () => {
             }}
           />
           <Text type="secondary">
-            已用: {formatFileSize(mockStorageInfo.used)} / 总共:{' '}
-            {formatFileSize(mockStorageInfo.total)}
+            已用: {formatFileSize(userInfo?.storage_used || 0)} / 总共:{' '}
+            {formatFileSize(userInfo?.storage_quota || 0)}
           </Text>
         </Card>
       </div>

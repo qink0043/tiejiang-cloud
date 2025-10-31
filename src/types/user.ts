@@ -18,6 +18,8 @@ export interface UserInfo {
   email?: string
   username?: string
   avatar?: string
+  storage_used?: number
+  storage_quota?: number
 }
 
 export interface EmailRegisterForm {

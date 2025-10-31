@@ -16,9 +16,9 @@ export interface FileItem {
 
 // 定义存储空间使用情况
 export interface StorageInfo {
-  total: number // 总空间，单位字节
-  used: number // 已用空间，单位字节
-  free: number // 剩余空间，单位字节
+  storage_quota: number // 总空间，单位字节
+  storage_used: number // 已用空间，单位字节
+  storage_free: number // 剩余空间，单位字节
 }
 
 // 定义文件搜索参数

@@ -17,7 +17,6 @@ const Header: React.FC = () => {
   const { userInfo } = useSelector((state: RootState) => state.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
   // 退出登录
   const handleLogout = () => {
     dispatch(logout())
