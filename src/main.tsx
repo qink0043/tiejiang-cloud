@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
-import { ConfigProvider, FloatButton, Modal, QRCode, Space, theme } from 'antd'
+import { ConfigProvider, FloatButton, Modal, Space, theme } from 'antd'
 import { Provider } from 'react-redux'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -27,7 +27,7 @@ const queryClient = new QueryClient({
       refetchOnReconnect: true, // 网络重连时重新请求
     },
     mutations: {
-      retry: 1, // mutation 失败重试 1 次
+      retry: 0, // mutation 失败重试 1 次
     },
   },
 })

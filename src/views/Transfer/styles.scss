@@ -1,0 +1,136 @@
+// pages/TransferPage/styles.scss
+
+.transfer-page {
+  padding: 24px;
+  background: #f0f2f5;
+  min-height: calc(100vh - 64px);
+
+  .transfer-header {
+    margin-bottom: 24px;
+
+    h3 {
+      margin-bottom: 16px;
+    }
+
+    .stats-row {
+      .ant-card {
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        
+        .ant-statistic {
+          .ant-statistic-title {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.65);
+          }
+
+          .ant-statistic-content {
+            font-size: 24px;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+
+  .transfer-content {
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+    .ant-tabs {
+      .ant-tabs-nav {
+        margin-bottom: 16px;
+      }
+    }
+
+    .history-actions {
+      margin-bottom: 16px;
+      text-align: right;
+    }
+
+    .transfer-list {
+      .transfer-item {
+        padding: 16px;
+        background: #fff;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s;
+
+        &:hover {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          border-color: #d9d9d9;
+        }
+
+        .ant-list-item-meta {
+          align-items: center;
+
+          .ant-list-item-meta-avatar {
+            display: flex;
+            align-items: center;
+          }
+
+          .ant-list-item-meta-content {
+            .ant-list-item-meta-title {
+              margin-bottom: 12px;
+            }
+
+            .task-details {
+              .ant-progress {
+                margin-bottom: 8px;
+              }
+
+              .task-info {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+
+                .ant-typography {
+                  font-size: 13px;
+                }
+              }
+            }
+          }
+        }
+
+        .ant-list-item-action {
+          margin-left: 16px;
+        }
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .transfer-page {
+    padding: 16px;
+
+    .transfer-header {
+      .stats-row {
+        .ant-col {
+          margin-bottom: 12px;
+        }
+      }
+    }
+
+    .transfer-content {
+      .transfer-list {
+        .transfer-item {
+          .ant-list-item-meta {
+            .task-details {
+              .task-info {
+                flex-direction: column;
+                gap: 4px;
+              }
+            }
+          }
+
+          .ant-list-item-action {
+            margin-left: 0;
+            margin-top: 12px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Button,
   Input,
@@ -43,6 +43,14 @@ import { CSSTransition } from 'react-transition-group'
 import { useNavigate } from 'react-router-dom'
 import IconFont from '@/contexts/IconFontContext'
 import { uploadToPublicGallery } from '@/api/modules/publicGallery'
+import {
+  addTask,
+  updateTaskProgress,
+  completeTask,
+  failTask,
+} from '@/stores/modules/transfer'
+import { v4 as uuidv4 } from 'uuid'
+import { MultipartUploadManager } from '@/utils/multipartUpload'
 
 const { Search } = Input
 
@@ -125,13 +133,69 @@ const HomePage: React.FC = () => {
   const handleSearch = (value: string) => {
     dispatch(setSearchKeyword(value))
   }
+  // 存储上传管理器实例
+  const uploadManagers = new Map<string, MultipartUploadManager>()
+  const handleUpload = async (file: File) => {
+    // 创建任务ID
+    const taskId = uuidv4()
 
-  const handleUpload = (file: File) => {
-    uploadFileMutation.mutate({
-      file,
-      path: currentPath,
-      onProgress: setUploadProgress,
-    })
+    // 创建上传管理器
+    const manager = new MultipartUploadManager(taskId)
+    uploadManagers.set(taskId, manager)
+
+    // 添加到传输任务
+    dispatch(
+      addTask({
+        id: taskId,
+        name: file.name,
+        type: 'upload',
+        status: 'pending',
+        progress: 0,
+        size: file.size,
+        startTime: Date.now(),
+        path: currentPath,
+        // file: file, // 保存文件引用，用于恢复上传
+      }),
+    )
+
+    try {
+      // 执行上传
+      await uploadFileMutation.mutateAsync({
+        file,
+        path: currentPath,
+        taskId,
+        onProgress: (progress, speed) => {
+          // 更新进度
+          dispatch(
+            updateTaskProgress({
+              id: taskId,
+              progress,
+              speed,
+            }),
+          )
+        },
+      })
+
+      // 上传成功
+      dispatch(completeTask(taskId))
+      message.success(`${file.name} 上传成功`)
+
+      // 清理管理器
+      uploadManagers.delete(taskId)
+    } catch (error: any) {
+      // 上传失败
+      dispatch(
+        failTask({
+          id: taskId,
+          error: error.message || '上传失败',
+        }),
+      )
+      message.error(`${file.name} 上传失败: ${error.message}`)
+
+      // 清理管理器
+      uploadManagers.delete(taskId)
+    }
+
     return false // 阻止默认上传
   }
 
@@ -291,6 +355,14 @@ const HomePage: React.FC = () => {
   }
 
   const HomePageRef = useRef(null)
+  // 在页面卸载时清理所有上传管理器
+  useEffect(() => {
+    return () => {
+      uploadManagers.forEach((manager) => {
+        manager.pause() // 暂停所有上传，保存检查点
+      })
+    }
+  }, [])
   return (
     <CSSTransition
       nodeRef={HomePageRef}

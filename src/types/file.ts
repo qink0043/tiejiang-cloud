@@ -14,6 +14,18 @@ export interface FileItem {
   thumbnail?: string // 缩略图URL
 }
 
+export interface UploadFileParams {
+  file: File
+  path: string
+  taskId?: string // 任务 ID，用于断点续传
+  onProgress?: (percent: number, speed?: number) => void
+}
+
+export interface CreateFolderParams {
+  name: string
+  path: string
+}
+
 // 定义存储空间使用情况
 export interface StorageInfo {
   storage_quota: number // 总空间，单位字节

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fileApi } from '@/api/modules/files'
-import type { FileItem } from '@/types/file'
-import type { UploadFileParams, CreateFolderParams } from '@/api/modules/files'
+import type { FileItem, UploadFileParams } from '@/types/file'
+import type { CreateFolderParams } from '@/api/modules/files'
 import { message } from 'antd'
 
 // Query Keys 常量
