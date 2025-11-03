@@ -24,7 +24,7 @@ const transferSlice = createSlice({
     // 更新任务进度
     updateTaskProgress: (
       state,
-      action: PayloadAction<{ id: string; progress: number; speed?: number }>
+      action: PayloadAction<{ id: string; progress: number; speed?: number }>,
     ) => {
       const task = state.tasks.find((t) => t.id === action.payload.id)
       if (task) {
@@ -68,10 +68,7 @@ const transferSlice = createSlice({
     },
 
     // 任务失败
-    failTask: (
-      state,
-      action: PayloadAction<{ id: string; error: string }>
-    ) => {
+    failTask: (state, action: PayloadAction<{ id: string; error: string }>) => {
       const taskIndex = state.tasks.findIndex((t) => t.id === action.payload.id)
       if (taskIndex !== -1) {
         const task = state.tasks[taskIndex]
@@ -111,7 +108,9 @@ const transferSlice = createSlice({
 
     // 重试失败的任务（将其从历史移回任务列表）
     retryTask: (state, action: PayloadAction<string>) => {
-      const historyIndex = state.history.findIndex((t) => t.id === action.payload)
+      const historyIndex = state.history.findIndex(
+        (t) => t.id === action.payload,
+      )
       if (historyIndex !== -1) {
         const task = state.history[historyIndex]
         task.status = 'pending'

@@ -15,20 +15,20 @@ export interface OSSConfig {
 export const getOSSConfig = async (): Promise<OSSConfig> => {
   // 调用后端接口获取 STS 临时凭证
   const res = await getSTSConfig()
-  console.log(res);
+  console.log(res)
   return {
     region: res.region,
     accessKeyId: res.accessKeyId,
     accessKeySecret: res.accessKeySecret,
     bucket: res.bucket,
-    stsToken: res.securityToken
+    stsToken: res.securityToken,
   }
 }
 
 // 创建 OSS 客户端
 export const createOSSClient = async (): Promise<OSS> => {
   const config = await getOSSConfig()
-  
+
   return new OSS({
     region: config.region,
     accessKeyId: config.accessKeyId,
@@ -46,13 +46,13 @@ let tokenExpireTime: number = 0
 
 export const getOSSClient = async (): Promise<OSS> => {
   const now = Date.now()
-  
+
   // 如果 token 快过期了（提前 5 分钟刷新），重新创建客户端
   // if (!ossClientInstance || now >= tokenExpireTime - 5 * 60 * 1000) {
-    ossClientInstance = await createOSSClient()
-    // STS token 通常有效期 1 小时
-    tokenExpireTime = now + 60 * 60 * 1000
+  ossClientInstance = await createOSSClient()
+  // STS token 通常有效期 1 小时
+  tokenExpireTime = now + 60 * 60 * 1000
   // }
-  
+
   return ossClientInstance
 }

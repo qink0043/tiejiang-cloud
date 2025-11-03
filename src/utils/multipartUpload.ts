@@ -65,13 +65,16 @@ export const calculateFileHash = (file: File): Promise<string> => {
 // 本地存储检查点
 const CHECKPOINT_KEY_PREFIX = 'oss_upload_checkpoint_'
 
-const saveCheckpoint = (taskId: string, checkpoint: Partial<UploadCheckpoint>) => {
+const saveCheckpoint = (
+  taskId: string,
+  checkpoint: Partial<UploadCheckpoint>,
+) => {
   try {
     // 保存时移除 File 对象，因为它不能序列化
     const { file, ...checkpointData } = checkpoint
     localStorage.setItem(
       `${CHECKPOINT_KEY_PREFIX}${taskId}`,
-      JSON.stringify(checkpointData)
+      JSON.stringify(checkpointData),
     )
   } catch (error) {
     console.error('保存检查点失败:', error)
@@ -108,7 +111,9 @@ export class MultipartUploadManager {
   }
 
   // 开始上传
-  async upload(config: MultipartUploadConfig): Promise<OSS.MultipartUploadResult> {
+  async upload(
+    config: MultipartUploadConfig,
+  ): Promise<OSS.MultipartUploadResult> {
     this.client = await getOSSClient()
     this.abortController = new AbortController()
     this.isPaused = false
@@ -169,8 +174,8 @@ export class MultipartUploadManager {
           if (!cpt) {
             // 如果没有 checkpoint 对象（例如已完成），
             // 仅回调最终进度，然后停止执行后续的 saveCheckpoint
-            onProgress?.(percent * 100);
-            return;
+            onProgress?.(percent * 100)
+            return
           }
 
           // 只有在 cpt 存在时，才保存检查点
@@ -241,7 +246,7 @@ export class MultipartUploadManager {
         // 使用 name 字段（对应 objectKey）
         await this.client.abortMultipartUpload(
           checkpoint.name || checkpoint.objectKey || '',
-          checkpoint.uploadId
+          checkpoint.uploadId,
         )
       } catch (error) {
         console.error('取消 OSS 上传任务失败:', error)
@@ -268,7 +273,7 @@ export const shouldUseMultipart = (fileSize: number): boolean => {
 export const simpleUpload = async (
   file: File,
   objectKey: string,
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number) => void,
 ): Promise<OSS.PutObjectResult> => {
   const client = await getOSSClient()
 

@@ -1,4 +1,8 @@
-import { MultipartUploadManager, shouldUseMultipart, simpleUpload } from '@/utils/multipartUpload'
+import {
+  MultipartUploadManager,
+  shouldUseMultipart,
+  simpleUpload,
+} from '@/utils/multipartUpload'
 import http from '..'
 import type { FileItem, UploadFileParams } from '@/types/file'
 
@@ -49,7 +53,7 @@ export const fileApi = {
       if (shouldUseMultipart(file.size)) {
         // 大文件：使用分片上传
         const manager = new MultipartUploadManager(taskId || fileId)
-        
+
         let lastUpdateTime = Date.now()
         let lastLoaded = 0
 
@@ -107,12 +111,14 @@ export const fileApi = {
       return fileItem
     } catch (error: any) {
       // 如果上传失败，通知后端
-      await http.post('/files/upload-failed', {
-        fileId,
-        error: error.message,
-      }).catch(() => {
-        // 忽略通知失败的错误
-      })
+      await http
+        .post('/files/upload-failed', {
+          fileId,
+          error: error.message,
+        })
+        .catch(() => {
+          // 忽略通知失败的错误
+        })
 
       throw error
     }

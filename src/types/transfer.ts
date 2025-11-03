@@ -1,7 +1,13 @@
 // types/transfer.ts
 
 export type TransferType = 'upload' | 'download'
-export type TransferStatus = 'pending' | 'uploading' | 'paused' | 'success' | 'error' | 'cancelled'
+export type TransferStatus =
+  | 'pending'
+  | 'uploading'
+  | 'paused'
+  | 'success'
+  | 'error'
+  | 'cancelled'
 
 export interface TransferTask {
   id: string

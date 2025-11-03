@@ -3,7 +3,7 @@ import './styles.scss'
 import CSSTransition from 'react-transition-group/CSSTransition'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import Masonry from 'react-masonry-css'
-import { Card, Spin } from 'antd'
+import { Card, Image, Spin } from 'antd'
 import { getPublicGalleryList } from '@/api/modules/publicGallery'
 
 // 每页加载数量
@@ -86,24 +86,25 @@ const GalleryPage: React.FC = () => {
             columnClassName="masonry-grid-column"
           >
             {allImages.map((img) => (
-              <Card
-                key={img.id}
-                hoverable
-                cover={
-                  <img
+              <div key={img.id} className="masonry-item">
+                <div className="image-card">
+                  <Image
                     src={img.url}
                     alt=""
                     style={{ width: '100%', borderRadius: 8 }}
+                    preview
+                    onLoad={(e) => {
+                      const img = e.currentTarget as HTMLImageElement
+                      img.style.opacity = '1'
+                    }}
                   />
-                }
-                style={{ marginBottom: 16 }}
-              >
-                <div style={{ fontSize: 12, color: '#666' }}>
-                  上传者：{img.uploader_name}
-                  <br />
-                  上传时间：{new Date(img.created_at).toLocaleString()}
+                  <div className="image-info">
+                    上传者：{img.uploader_name}
+                    <br />
+                    上传时间：{new Date(img.created_at).toLocaleString()}
+                  </div>
                 </div>
-              </Card>
+              </div>
             ))}
           </Masonry>
 
