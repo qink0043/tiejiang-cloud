@@ -51,6 +51,8 @@ import {
 } from '@/stores/modules/transfer'
 import { v4 as uuidv4 } from 'uuid'
 import { MultipartUploadManager } from '@/utils/multipartUpload'
+import { useContextMenu } from 'react-contexify'
+import { ContexifyMenu } from '@/contexts/ContexifyContext'
 
 const { Search } = Input
 
@@ -115,8 +117,7 @@ const HomePage: React.FC = () => {
   const deleteFileMutation = useDeleteFile(currentPath)
   const batchDeleteMutation = useBatchDeleteFiles(currentPath)
   const navigate = useNavigate()
-
-  const [uploadProgress, setUploadProgress] = useState(0)
+  const { show } = useContextMenu({ id: 'demo' })
 
   // 搜索过滤
   const filteredFiles = searchKeyword
@@ -209,6 +210,8 @@ const HomePage: React.FC = () => {
           autoFocus
         />
       ),
+      cancelText: '取消',
+      okText: '新建',
       onOk: () => {
         const input = document.getElementById(
           'folder-name-input',
@@ -268,6 +271,13 @@ const HomePage: React.FC = () => {
   const handleDownload = (file: FileItem) => {
     message.success('下载成功')
     console.log(file)
+  }
+
+  // 处理表格右键
+  const handleContextMenu = (e: React.MouseEvent, record: FileItem) => {
+    e.preventDefault()
+    show({ event: e })
+    console.log(record.name)
   }
 
   const columns: ColumnsType<FileItem> = [
@@ -336,6 +346,8 @@ const HomePage: React.FC = () => {
                     <IconFont type="icon-tukuguanli" /> 上传到公共图库
                   </span>
                 ),
+                disabled:
+                  record.type === 'folder' || !isImageFile(record.extension),
               },
             ],
           }}
@@ -431,7 +443,12 @@ const HomePage: React.FC = () => {
                 dataSource={filteredFiles}
                 rowKey="id"
                 pagination={{ pageSize: 10 }}
+                onRow={(record) => ({
+                  onContextMenu: (e) => handleContextMenu(e, record),
+                })}
               />
+
+              <p onContextMenu={(e) => show({ event: e })}>右键我</p>
             </div>
           ) : (
             <div className="gallery-view">
@@ -463,6 +480,7 @@ const HomePage: React.FC = () => {
             </div>
           )}
         </Spin>
+        <ContexifyMenu MENU_ID="demo" />
       </div>
     </CSSTransition>
   )

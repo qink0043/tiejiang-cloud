@@ -93,9 +93,7 @@ export const useCreateFolder = (path: string) => {
       )
       message.success('文件夹创建成功')
     },
-    onError: (error: any) => {
-      message.error(`创建失败: ${error.message || '未知错误'}`)
-    },
+    onError: () => {},
   })
 }
 
@@ -118,9 +116,7 @@ export const useDeleteFile = (path: string) => {
       )
       message.success('删除成功')
     },
-    onError: (error: any) => {
-      message.error(`删除失败: ${error.message || '未知错误'}`)
-    },
+    onError: () => {},
   })
 }
 
@@ -142,9 +138,7 @@ export const useBatchDeleteFiles = (path: string) => {
       )
       message.success(`已删除 ${fileIds.length} 个文件`)
     },
-    onError: (error: any) => {
-      message.error(`批量删除失败: ${error.message || '未知错误'}`)
-    },
+    onError: () => {},
   })
 }
 
