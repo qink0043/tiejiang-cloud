@@ -12,7 +12,12 @@ import { useSelector } from 'react-redux'
 const { Sider: AntdSider } = Layout
 const { Title, Text } = Typography
 
-const Sider: React.FC = () => {
+interface SiderProps {
+  collapsed?: boolean;
+  onCollapse?: (collapsed: boolean) => void;
+}
+
+const Sider: React.FC<SiderProps> = ({ collapsed, onCollapse }) => {
   const { isDarkMode } = useContext(ThemeContext)
   const { userInfo } = useSelector((state: RootState) => state.user)
   const storagePercentage = Math.round(
@@ -48,6 +53,10 @@ const Sider: React.FC = () => {
   return (
     <AntdSider
       width={250}
+      collapsed={collapsed}
+      onCollapse={onCollapse}
+      collapsible
+      collapsedWidth={80}
       theme={isDarkMode ? 'dark' : 'light'}
       style={{
         position: 'fixed',
@@ -61,21 +70,51 @@ const Sider: React.FC = () => {
     >
       {/* 用户信息和存储空间 */}
       <div className="sider-header">
-        <Card className="storage-card" size="small">
-          <Title level={5}>存储空间</Title>
-          <Progress
-            percent={storagePercentage}
-            status="active"
-            strokeColor={{
-              '0%': '#108ee9',
-              '100%': '#87d068',
+        {collapsed ? (
+          <div 
+            style={{ 
+              padding: '12px 0', 
+              textAlign: 'center',
+              height: 60,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
-          />
-          <Text type="secondary">
-            已用: {formatFileSize(userInfo?.storage_used || 0)} / 总共:{' '}
-            {formatFileSize(userInfo?.storage_quota || 0)}
-          </Text>
-        </Card>
+          >
+            <div 
+              style={{ 
+                width: 32, 
+                height: 32, 
+                borderRadius: '50%', 
+                background: '#1890ff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: 12
+              }}
+              title={`${storagePercentage}%`}
+            >
+              {storagePercentage}%
+            </div>
+          </div>
+        ) : (
+          <Card className="storage-card" size="small">
+            <Title level={5}>存储空间</Title>
+            <Progress
+              percent={storagePercentage}
+              status="active"
+              strokeColor={{
+                '0%': '#108ee9',
+                '100%': '#87d068',
+              }}
+            />
+            <Text type="secondary">
+              已用: {formatFileSize(userInfo?.storage_used || 0)} / 总共:{' '}
+              {formatFileSize(userInfo?.storage_quota || 0)}
+            </Text>
+          </Card>
+        )}
       </div>
 
       {/* 菜单项 */}

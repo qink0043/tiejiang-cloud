@@ -6,6 +6,7 @@ $prefix: '--custom-';
 // 默认（亮色）主题的 CSS 变量
 :root {
   #{$prefix}background: #f0f2f5;
+  #{$prefix}header-bg: #fff;
   #{$prefix}text-color: #333;
   #{$prefix}card-bg: #fff;
   #{$prefix}primary-color: #1677ff;
@@ -14,6 +15,7 @@ $prefix: '--custom-';
 // 暗色主题的 CSS 变量
 .dark-theme {
   #{$prefix}background: #001529;
+  #{$prefix}header-bg: #001529;
   #{$prefix}text-color: rgba(255, 255, 255, 0.85);
   #{$prefix}card-bg: #1f1f1f;
   #{$prefix}primary-color: #1677ff; // 这里可以根据需要更改

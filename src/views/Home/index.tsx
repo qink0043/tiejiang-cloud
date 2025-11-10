@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   Button,
   Input,
@@ -44,10 +44,10 @@ import { useNavigate } from 'react-router-dom'
 import IconFont from '@/contexts/IconFontContext'
 import { uploadToPublicGallery } from '@/api/modules/publicGallery'
 import {
-  addTask,
-  updateTaskProgress,
-  completeTask,
-  failTask,
+  addTaskWithApi,
+  updateTaskProgressWithApi,
+  completeTaskWithApi,
+  failTaskWithApi,
 } from '@/stores/modules/transfer'
 import { v4 as uuidv4 } from 'uuid'
 import { MultipartUploadManager } from '@/utils/multipartUpload'
@@ -145,19 +145,27 @@ const HomePage: React.FC = () => {
     uploadManagers.set(taskId, manager)
 
     // 添加到传输任务
-    dispatch(
-      addTask({
-        id: taskId,
-        name: file.name,
-        type: 'upload',
-        status: 'pending',
-        progress: 0,
-        size: file.size,
-        startTime: Date.now(),
-        path: currentPath,
-        // file: file, // 保存文件引用，用于恢复上传
-      }),
-    )
+    const task = {
+      id: taskId,
+      name: file.name,
+      type: 'upload' as const,
+      status: 'pending' as const,
+      progress: 0,
+      size: file.size,
+      startTime: Date.now(),
+      path: currentPath,
+    };
+
+    // 先创建数据库记录
+    try {
+      await dispatch(addTaskWithApi({
+        ...task,
+        file: file, // 保存文件引用，用于恢复上传
+      })).unwrap();
+    } catch (error: any) {
+      message.error(`创建传输记录失败: ${error.message}`);
+      return false;
+    }
 
     try {
       // 执行上传
@@ -168,7 +176,7 @@ const HomePage: React.FC = () => {
         onProgress: (progress, speed) => {
           // 更新进度
           dispatch(
-            updateTaskProgress({
+            updateTaskProgressWithApi({
               id: taskId,
               progress,
               speed,
@@ -178,7 +186,7 @@ const HomePage: React.FC = () => {
       })
 
       // 上传成功
-      dispatch(completeTask(taskId))
+      dispatch(completeTaskWithApi({ id: taskId }))
       message.success(`${file.name} 上传成功`)
 
       // 清理管理器
@@ -186,7 +194,7 @@ const HomePage: React.FC = () => {
     } catch (error: any) {
       // 上传失败
       dispatch(
-        failTask({
+        failTaskWithApi({
           id: taskId,
           error: error.message || '上传失败',
         }),
@@ -447,8 +455,6 @@ const HomePage: React.FC = () => {
                   onContextMenu: (e) => handleContextMenu(e, record),
                 })}
               />
-
-              <p onContextMenu={(e) => show({ event: e })}>右键我</p>
             </div>
           ) : (
             <div className="gallery-view">

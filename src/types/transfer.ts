@@ -1,25 +1,29 @@
 // types/transfer.ts
 
+export type TransferStatus = 
+  | 'pending'      // 等待中
+  | 'uploading'    // 上传中
+  | 'downloading'  // 下载中
+  | 'paused'       // 已暂停
+  | 'success'      // 成功
+  | 'error'        // 失败
+  | 'cancelled'    // 已取消
+
 export type TransferType = 'upload' | 'download'
-export type TransferStatus =
-  | 'pending'
-  | 'uploading'
-  | 'paused'
-  | 'success'
-  | 'error'
-  | 'cancelled'
 
 export interface TransferTask {
   id: string
+  fileId?: string
   name: string
+  size: number
   type: TransferType
   status: TransferStatus
-  progress: number // 0-100
-  size: number // 文件大小（字节）
-  speed?: number // 传输速度（字节/秒）
-  startTime: number // 开始时间戳
-  endTime?: number // 结束时间戳
-  error?: string // 错误信息
-  path?: string // 文件路径
-  file?: File // 原始文件对象（用于恢复上传）
+  progress: number
+  speed?: number
+  transferredSize?: number
+  startTime: number
+  endTime?: number
+  error?: string
+  path?: string  // 文件路径
+  file?: File
 }

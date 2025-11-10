@@ -1,6 +1,10 @@
 import React, { useContext } from 'react'
 import { Layout, Switch, Button, Avatar, Dropdown } from 'antd'
-import { BulbOutlined } from '@ant-design/icons'
+import {
+  BulbOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from '@ant-design/icons'
 import { ThemeContext } from '../contexts/ThemeContext'
 import './styles.scss'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,7 +15,12 @@ import IconFont from '../contexts/IconFontContext'
 import { logout } from '@/stores/modules/user'
 import { useNavigate } from 'react-router-dom'
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  collapsed?: boolean
+  onCollapse?: () => void
+}
+
+const Header: React.FC<HeaderProps> = ({ collapsed, onCollapse }) => {
   // 使用 useContext 消费 ThemeContext
   const { isDarkMode, toggleTheme } = useContext(ThemeContext)
   const { userInfo } = useSelector((state: RootState) => state.user)
@@ -25,8 +34,23 @@ const Header: React.FC = () => {
   }
 
   return (
-    <AntdHeader className="header-container" style={{ padding: 0 }}>
+    <AntdHeader
+      className="header-container"
+      style={{ left: collapsed ? 80 : 250 }}
+    >
       <div className="logo">
+        {onCollapse && (
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={onCollapse}
+            style={{
+              fontSize: '16px',
+              width: 64,
+              height: 64,
+            }}
+          />
+        )}
         <span>铁匠云盘</span>
       </div>
       <div className="option-btns">

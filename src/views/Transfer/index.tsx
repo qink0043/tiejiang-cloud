@@ -1,5 +1,5 @@
 // pages/TransferPage/index.tsx
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Card,
   List,
@@ -30,15 +30,16 @@ import {
 } from '@ant-design/icons'
 import { useAppSelector, useAppDispatch } from '@/stores/hooks'
 import {
-  cancelTask,
   clearHistory,
   removeHistoryItem,
   pauseTask,
   resumeTask,
   retryTask,
-  updateTaskProgress,
-  completeTask,
-  failTask,
+  loadHistory,
+  cancelTaskWithApi,
+  completeTaskWithApi,
+  failTaskWithApi,
+  updateTaskProgressWithApi,
 } from '@/stores/modules/transfer'
 import { formatFileSize } from '@/utils'
 import type { TransferTask } from '@/types/transfer'
@@ -96,7 +97,12 @@ const TransferPage: React.FC = () => {
       uploading: {
         color: 'processing',
         icon: <UploadOutlined />,
-        text: '传输中',
+        text: '上传中',
+      },
+      downloading: {
+        color: 'processing',
+        icon: <DownloadOutlined />,
+        text: '下载中',
       },
       paused: {
         color: 'warning',
@@ -148,7 +154,7 @@ const TransferPage: React.FC = () => {
         objectKey: `${task.path}/${task.name}`,
         onProgress: (progress) => {
           dispatch(
-            updateTaskProgress({
+            updateTaskProgressWithApi({
               id: task.id,
               progress,
             }),
@@ -156,12 +162,12 @@ const TransferPage: React.FC = () => {
         },
       })
 
-      dispatch(completeTask(task.id))
+      dispatch(completeTaskWithApi({ id: task.id, fileId: task.fileId }))
       message.success('上传完成')
       uploadManagers.delete(task.id)
     } catch (error: any) {
       dispatch(
-        failTask({
+        failTaskWithApi({
           id: task.id,
           error: error.message,
         }),
@@ -178,7 +184,7 @@ const TransferPage: React.FC = () => {
       await manager.cancel()
       uploadManagers.delete(taskId)
     }
-    dispatch(cancelTask(taskId))
+    dispatch(cancelTaskWithApi(taskId))
     message.info('任务已取消')
   }
 
@@ -201,7 +207,7 @@ const TransferPage: React.FC = () => {
         objectKey: `${task.path}/${task.name}`,
         onProgress: (progress) => {
           dispatch(
-            updateTaskProgress({
+            updateTaskProgressWithApi({
               id: task.id,
               progress,
             }),
@@ -209,12 +215,12 @@ const TransferPage: React.FC = () => {
         },
       })
 
-      dispatch(completeTask(task.id))
+      dispatch(completeTaskWithApi({ id: task.id, fileId: task.fileId }))
       message.success('上传完成')
       uploadManagers.delete(task.id)
     } catch (error: any) {
       dispatch(
-        failTask({
+        failTaskWithApi({
           id: task.id,
           error: error.message,
         }),
@@ -431,6 +437,10 @@ const TransferPage: React.FC = () => {
     failed: history.filter((t) => t.status === 'error').length,
     total: tasks.length + history.length,
   }
+  // 获取传输任务
+  useEffect(() => {
+    dispatch(loadHistory())
+  }, [])
 
   return (
     <div className="transfer-page">
