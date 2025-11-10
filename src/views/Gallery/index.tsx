@@ -3,11 +3,30 @@ import './styles.scss'
 import CSSTransition from 'react-transition-group/CSSTransition'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import Masonry from 'react-masonry-css'
-import { Card, Image, Spin } from 'antd'
+import { Image, Spin, Tag } from 'antd'
 import { getPublicGalleryList } from '@/api/modules/publicGallery'
 
 // 每页加载数量
 const PAGE_SIZE = 20
+
+// 定义图片数据结构
+interface GalleryImage {
+  id: string
+  url: string
+  uploader_name: string
+  created_at: string
+  is_R18: boolean
+}
+
+interface GalleryResponse {
+  list: GalleryImage[]
+  pagination: {
+    page: number
+    pageSize: number
+    total: number
+    totalPages: number
+  }
+}
 
 const GalleryPage: React.FC = () => {
   const GalleryPageRef = useRef(null)
@@ -17,13 +36,17 @@ const GalleryPage: React.FC = () => {
   // React Query 无限加载逻辑
   // -------------------------------
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useInfiniteQuery({
+    useInfiniteQuery<GalleryResponse>({
       queryKey: ['publicGallery'],
       initialPageParam: 1,
       queryFn: async ({ pageParam = 1 }) => {
-        const res = await getPublicGalleryList(pageParam, PAGE_SIZE)
-        // 现在 res 就是 { list: [...], pagination: {...} }
-        return res
+        const response = await getPublicGalleryList(
+          pageParam as number,
+          PAGE_SIZE,
+        )
+        console.log('response', response);
+        
+        return response
       },
       getNextPageParam: (lastPage) => {
         const { pagination } = lastPage
@@ -91,17 +114,23 @@ const GalleryPage: React.FC = () => {
                   <Image
                     src={img.url}
                     alt=""
-                    style={{ width: '100%', borderRadius: 8 }}
+                    style={{
+                      width: '100%',
+                      borderRadius: 8,
+                      filter: img.is_R18 ? 'blur(16px)' : 'none',
+                    }}
                     preview
                     onLoad={(e) => {
-                      const img = e.currentTarget as HTMLImageElement
-                      img.style.opacity = '1'
+                      const imgElement = e.currentTarget as HTMLImageElement
+                      imgElement.style.opacity = '1'
                     }}
                   />
                   <div className="image-info">
                     上传者：{img.uploader_name}
                     <br />
                     上传时间：{new Date(img.created_at).toLocaleString()}
+                    <br />
+                    {img.is_R18 && <Tag color="error">R18</Tag>}
                   </div>
                 </div>
               </div>
