@@ -13,8 +13,8 @@ const { Sider: AntdSider } = Layout
 const { Title, Text } = Typography
 
 interface SiderProps {
-  collapsed?: boolean;
-  onCollapse?: (collapsed: boolean) => void;
+  collapsed?: boolean
+  onCollapse?: (collapsed: boolean) => void
 }
 
 const Sider: React.FC<SiderProps> = ({ collapsed, onCollapse }) => {
@@ -71,27 +71,27 @@ const Sider: React.FC<SiderProps> = ({ collapsed, onCollapse }) => {
       {/* 用户信息和存储空间 */}
       <div className="sider-header">
         {collapsed ? (
-          <div 
-            style={{ 
-              padding: '12px 0', 
+          <div
+            style={{
+              padding: '12px 0',
               textAlign: 'center',
               height: 60,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
             }}
           >
-            <div 
-              style={{ 
-                width: 32, 
-                height: 32, 
-                borderRadius: '50%', 
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
                 background: '#1890ff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'white',
-                fontSize: 12
+                fontSize: 12,
               }}
               title={`${storagePercentage}%`}
             >

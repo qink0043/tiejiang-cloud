@@ -63,7 +63,10 @@ export const createTransfer = (params: CreateTransferParams) => {
 }
 
 // 更新传输进度
-export const updateTransferProgress = (id: string, params: UpdateProgressParams) => {
+export const updateTransferProgress = (
+  id: string,
+  params: UpdateProgressParams,
+) => {
   return http<TransferRecord>({
     url: `/transfers/${id}/progress`,
     method: 'PUT',
@@ -72,7 +75,10 @@ export const updateTransferProgress = (id: string, params: UpdateProgressParams)
 }
 
 // 标记传输完成
-export const completeTransfer = (id: string, params?: CompleteTransferParams) => {
+export const completeTransfer = (
+  id: string,
+  params?: CompleteTransferParams,
+) => {
   return http<TransferRecord>({
     url: `/transfers/${id}/complete`,
     method: 'PUT',

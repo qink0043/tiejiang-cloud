@@ -1,5 +1,4 @@
 import http from '..'
-import type { AxiosResponse } from 'axios'
 
 // 定义返回数据结构
 interface PublicGalleryItem {

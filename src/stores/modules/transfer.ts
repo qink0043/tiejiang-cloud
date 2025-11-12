@@ -1,5 +1,9 @@
 // stores/modules/transfer.ts
-import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from '@reduxjs/toolkit'
 import type { TransferTask } from '@/types/transfer'
 import * as transferApi from '@/api/modules/transfer'
 
@@ -28,13 +32,18 @@ const addTaskWithApi = createAsyncThunk(
       transferType: task.type,
     })
     return { ...task, id: response.id }
-  }
+  },
 )
 
 // 更新任务进度并同步到数据库
 const updateTaskProgressWithApi = createAsyncThunk(
   'transfer/updateTaskProgressWithApi',
-  async ({ id, progress, speed, transferredSize }: {
+  async ({
+    id,
+    progress,
+    speed,
+    transferredSize,
+  }: {
     id: string
     progress: number
     speed?: number
@@ -46,7 +55,7 @@ const updateTaskProgressWithApi = createAsyncThunk(
       transferredSize,
     })
     return { id, progress, speed, transferredSize }
-  }
+  },
 )
 
 // 完成任务并同步到数据库
@@ -55,7 +64,7 @@ const completeTaskWithApi = createAsyncThunk(
   async ({ id, fileId }: { id: string; fileId?: string }) => {
     await transferApi.completeTransfer(id, { fileId })
     return id
-  }
+  },
 )
 
 // 任务失败并同步到数据库
@@ -64,7 +73,7 @@ const failTaskWithApi = createAsyncThunk(
   async ({ id, error }: { id: string; error: string }) => {
     await transferApi.failTransfer(id, { error })
     return { id, error }
-  }
+  },
 )
 
 // 取消任务并同步到数据库
@@ -73,7 +82,7 @@ const cancelTaskWithApi = createAsyncThunk(
   async (id: string) => {
     await transferApi.cancelTransfer(id)
     return id
-  }
+  },
 )
 
 // 加载进行中的任务
@@ -82,7 +91,7 @@ const loadActiveTasks = createAsyncThunk(
   async () => {
     const response = await transferApi.getTransfers({ status: 'in_progress' })
     return response.list
-  }
+  },
 )
 
 // 加载历史记录
@@ -94,7 +103,7 @@ const loadHistory = createAsyncThunk(
       ...params,
     })
     return response
-  }
+  },
 )
 
 // 删除历史记录
@@ -103,7 +112,7 @@ const removeHistoryItemWithApi = createAsyncThunk(
   async (id: string) => {
     await transferApi.deleteTransfer(id)
     return id
-  }
+  },
 )
 
 // 清空历史记录
@@ -111,7 +120,7 @@ const clearHistoryWithApi = createAsyncThunk(
   'transfer/clearHistoryWithApi',
   async () => {
     await transferApi.clearCompletedTransfers()
-  }
+  },
 )
 
 // 批量删除历史记录
@@ -120,7 +129,7 @@ const batchDeleteHistoryWithApi = createAsyncThunk(
   async (ids: string[]) => {
     await transferApi.batchDeleteTransfers(ids)
     return ids
-  }
+  },
 )
 
 const transferSlice = createSlice({
@@ -135,7 +144,12 @@ const transferSlice = createSlice({
     // 本地更新任务进度（不调用 API）
     updateTaskProgress: (
       state,
-      action: PayloadAction<{ id: string; progress: number; speed?: number; transferredSize?: number }>,
+      action: PayloadAction<{
+        id: string
+        progress: number
+        speed?: number
+        transferredSize?: number
+      }>,
     ) => {
       const task = state.tasks.find((t) => t.id === action.payload.id)
       if (task) {
@@ -334,7 +348,9 @@ const transferSlice = createSlice({
         speed: record.speed,
         transferredSize: record.transferred_size,
         startTime: new Date(record.started_at).getTime(),
-        endTime: record.completed_at ? new Date(record.completed_at).getTime() : undefined,
+        endTime: record.completed_at
+          ? new Date(record.completed_at).getTime()
+          : undefined,
         error: record.error_message || undefined,
       }))
     })
@@ -362,7 +378,9 @@ const transferSlice = createSlice({
         speed: record.speed,
         transferredSize: record.transferred_size,
         startTime: new Date(record.started_at).getTime(),
-        endTime: record.completed_at ? new Date(record.completed_at).getTime() : undefined,
+        endTime: record.completed_at
+          ? new Date(record.completed_at).getTime()
+          : undefined,
         error: record.error_message || undefined,
       }))
     })
@@ -383,7 +401,9 @@ const transferSlice = createSlice({
 
     // batchDeleteHistoryWithApi
     builder.addCase(batchDeleteHistoryWithApi.fulfilled, (state, action) => {
-      state.history = state.history.filter((t) => !action.payload.includes(t.id))
+      state.history = state.history.filter(
+        (t) => !action.payload.includes(t.id),
+      )
     })
   },
 })

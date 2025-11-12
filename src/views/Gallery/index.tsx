@@ -44,8 +44,8 @@ const GalleryPage: React.FC = () => {
           pageParam as number,
           PAGE_SIZE,
         )
-        console.log('response', response);
-        
+        console.log('response', response)
+
         return response
       },
       getNextPageParam: (lastPage) => {

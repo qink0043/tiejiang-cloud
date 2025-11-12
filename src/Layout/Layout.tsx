@@ -37,10 +37,10 @@ const Layout = () => {
     <AntdLayout style={{ minHeight: '100vh' }}>
       <Sider collapsed={collapsed} onCollapse={setCollapsed} />
       <AntdLayout
-        style={{ 
-          marginLeft: collapsed ? 80 : 250, 
+        style={{
+          marginLeft: collapsed ? 80 : 250,
           minHeight: '100vh',
-          transition: 'margin-left 0.2s'
+          transition: 'margin-left 0.2s',
         }}
       >
         <Header collapsed={collapsed} onCollapse={toggleCollapsed} />

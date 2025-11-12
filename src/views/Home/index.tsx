@@ -154,17 +154,19 @@ const HomePage: React.FC = () => {
       size: file.size,
       startTime: Date.now(),
       path: currentPath,
-    };
+    }
 
     // 先创建数据库记录
     try {
-      await dispatch(addTaskWithApi({
-        ...task,
-        file: file, // 保存文件引用，用于恢复上传
-      })).unwrap();
+      await dispatch(
+        addTaskWithApi({
+          ...task,
+          file: file, // 保存文件引用，用于恢复上传
+        }),
+      ).unwrap()
     } catch (error: any) {
-      message.error(`创建传输记录失败: ${error.message}`);
-      return false;
+      message.error(`创建传输记录失败: ${error.message}`)
+      return false
     }
 
     try {
