@@ -52,7 +52,7 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import { MultipartUploadManager } from '@/utils/multipartUpload'
 import { useContextMenu } from 'react-contexify'
-import { ContexifyMenu } from '@/contexts/ContexifyContext'
+import { ContexifyMenu, FILE_LIST_MENU_ID } from '@/contexts/ContexifyContext'
 
 const { Search } = Input
 
@@ -117,7 +117,7 @@ const HomePage: React.FC = () => {
   const deleteFileMutation = useDeleteFile(currentPath)
   const batchDeleteMutation = useBatchDeleteFiles(currentPath)
   const navigate = useNavigate()
-  const { show } = useContextMenu({ id: 'demo' })
+  const { show } = useContextMenu({ id: FILE_LIST_MENU_ID })
 
   // 搜索过滤
   const filteredFiles = searchKeyword
@@ -286,7 +286,7 @@ const HomePage: React.FC = () => {
   // 处理表格右键
   const handleContextMenu = (e: React.MouseEvent, record: FileItem) => {
     e.preventDefault()
-    show({ event: e })
+    show({ event: e, props: { file: record } })
     console.log(record.name)
   }
 
@@ -488,7 +488,7 @@ const HomePage: React.FC = () => {
             </div>
           )}
         </Spin>
-        <ContexifyMenu MENU_ID="demo" />
+        <ContexifyMenu />
       </div>
     </CSSTransition>
   )
