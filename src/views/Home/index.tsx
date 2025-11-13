@@ -52,7 +52,7 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import { MultipartUploadManager } from '@/utils/multipartUpload'
 import { useContextMenu } from 'react-contexify'
-import { ContexifyMenu, FILE_LIST_MENU_ID } from '@/contexts/ContexifyContext'
+import { FILE_LIST_MENU_ID, GalleryImageContexifyMenu } from '@/contexts/ContexifyContext'
 
 const { Search } = Input
 
@@ -488,7 +488,7 @@ const HomePage: React.FC = () => {
             </div>
           )}
         </Spin>
-        <ContexifyMenu />
+        <GalleryImageContexifyMenu />
       </div>
     </CSSTransition>
   )

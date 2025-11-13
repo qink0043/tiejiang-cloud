@@ -38,3 +38,10 @@ export const uploadToPublicGallery = (fileId: string) => {
     fileId,
   })
 }
+
+// 切换图片的R18标记状态
+export const toggleR18Status = (imageId: string, isR18: boolean) => {
+  return http.put(`/public-gallery/${imageId}/r18`, {
+    isR18,
+  })
+}

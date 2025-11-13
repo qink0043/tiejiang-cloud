@@ -1,16 +1,18 @@
 import { useEffect, useRef } from 'react'
 import './styles.scss'
 import CSSTransition from 'react-transition-group/CSSTransition'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import Masonry from 'react-masonry-css'
-import { Image, Spin, Tag } from 'antd'
-import { getPublicGalleryList } from '@/api/modules/publicGallery'
+import { Image, Spin, Tag, message } from 'antd'
+import { getPublicGalleryList, toggleR18Status } from '@/api/modules/publicGallery'
+import { useContextMenu } from 'react-contexify'
+import { GalleryImageContexifyMenu, GALLERY_IMAGE_MENU_ID } from '@/contexts/ContexifyContext'
 
 // 每页加载数量
 const PAGE_SIZE = 20
 
 // 定义图片数据结构
-interface GalleryImage {
+export interface GalleryImage {
   id: string
   url: string
   uploader_name: string
@@ -31,11 +33,13 @@ interface GalleryResponse {
 const GalleryPage: React.FC = () => {
   const GalleryPageRef = useRef(null)
   const bottomRef = useRef<HTMLDivElement | null>(null)
+  const { show } = useContextMenu({ id: GALLERY_IMAGE_MENU_ID })
+  const queryClient = useQueryClient()
 
   // -------------------------------
   // React Query 无限加载逻辑
   // -------------------------------
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, refetch } =
     useInfiniteQuery<GalleryResponse>({
       queryKey: ['publicGallery'],
       initialPageParam: 1,
@@ -56,6 +60,57 @@ const GalleryPage: React.FC = () => {
       staleTime: 1000 * 60 * 5,
       gcTime: 1000 * 60 * 30,
     })
+
+  // 切换R18标记
+  const handleToggleR18 = async (image: GalleryImage) => {
+    try {
+      await toggleR18Status(image.id, !image.is_R18)
+      message.success(`${image.is_R18 ? '取消R18标记' : '标记为R18'}成功`)
+      
+      // 更新查询缓存
+      queryClient.setQueriesData(
+        { queryKey: ['publicGallery'] },
+        (oldData: any) => {
+          if (!oldData) return oldData
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: GalleryResponse) => ({
+              ...page,
+              list: page.list.map((img: GalleryImage) =>
+                img.id === image.id
+                  ? { ...img, is_R18: !img.is_R18 }
+                  : img
+              )
+            }))
+          }
+        }
+      )
+    } catch (error) {
+      message.error(`${image.is_R18 ? '取消R18标记' : '标记为R18'}失败`)
+      console.error('切换R18标记失败:', error)
+    }
+  }
+
+  // 处理图片右键菜单
+  const handleImageContextMenu = (e: React.MouseEvent, image: GalleryImage) => {
+    e.preventDefault()
+    show({
+      event: e,
+      props: {
+        image,
+        onToggleR18: handleToggleR18
+      }
+    })
+    
+    // 更新菜单文本
+    setTimeout(() => {
+      const menuItem = document.getElementById('toggle-r18-text')
+      if (menuItem) {
+        menuItem.textContent = image.is_R18 ? '取消R18标记' : '标记为R18'
+      }
+    }, 0)
+  }
 
   // -------------------------------
   // IntersectionObserver 无限滚动
@@ -109,7 +164,11 @@ const GalleryPage: React.FC = () => {
             columnClassName="masonry-grid-column"
           >
             {allImages.map((img) => (
-              <div key={img.id} className="masonry-item">
+              <div 
+                key={img.id} 
+                className="masonry-item"
+                onContextMenu={(e) => handleImageContextMenu(e, img)}
+              >
                 <div className="image-card">
                   <Image
                     src={img.url}
@@ -148,6 +207,7 @@ const GalleryPage: React.FC = () => {
             )}
           </div>
         </div>
+        <GalleryImageContexifyMenu />
       </div>
     </CSSTransition>
   )

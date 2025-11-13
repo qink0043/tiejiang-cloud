@@ -1,4 +1,3 @@
-import React from 'react'
 import { Menu, Item, Separator, useContextMenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.css'
 import './index.scss'
@@ -6,12 +5,19 @@ import type { FileItem } from '@/types/file'
 import { fileApi } from '@/api/modules/files'
 import { message } from 'antd'
 import type { ItemParams } from 'react-contexify'
+import type { GalleryImage } from '@/views/Gallery/index'
 
 // 定义右键菜单的ID常量
 export const FILE_LIST_MENU_ID = 'file-list-menu'
+export const GALLERY_IMAGE_MENU_ID = 'gallery-image-menu'
 
 interface ContextMenuHandlerParams {
   file: FileItem
+}
+
+interface GalleryContextMenuHandlerParams {
+  image: GalleryImage
+  onToggleR18: (image: GalleryImage) => void
 }
 
 // 处理文件下载
@@ -39,7 +45,7 @@ const handleDownload = async ({ file }: ContextMenuHandlerParams) => {
   }
 }
 
-export const ContexifyMenu = () => {
+export const FileListContexifyMenu = () => {
   const { hideAll } = useContextMenu({ id: FILE_LIST_MENU_ID })
 
   // 处理菜单项点击
@@ -81,6 +87,36 @@ export const ContexifyMenu = () => {
   )
 }
 
+export const GalleryImageContexifyMenu = () => {
+  const { hideAll } = useContextMenu({ id: GALLERY_IMAGE_MENU_ID })
+
+  // 处理菜单项点击
+  const handleItemClick = ({ id, props }: ItemParams) => {
+    hideAll()
+    
+    const params: GalleryContextMenuHandlerParams = {
+      image: props!.image,
+      onToggleR18: props!.onToggleR18
+    }
+    
+    switch (id) {
+      case 'toggleR18':
+        params.onToggleR18(params.image)
+        break
+      default:
+        break
+    }
+  }
+
+  return (
+    <Menu id={GALLERY_IMAGE_MENU_ID} animation="scale">
+      <Item id="toggleR18" onClick={handleItemClick}>
+        <TagOutlined /> <span id="toggle-r18-text">标记为R18</span>
+      </Item>
+    </Menu>
+  )
+}
+
 // 为了保持向后兼容性，导出旧的组件
 export const ContexifyMenuOld = (props: { MENU_ID: string }) => {
   const { MENU_ID } = props
@@ -98,3 +134,4 @@ export const ContexifyMenuOld = (props: { MENU_ID: string }) => {
 const DownloadOutlined = () => <span>📥</span>
 const DeleteOutlined = () => <span>🗑️</span>
 const UploadOutlined = () => <span>📤</span>
+const TagOutlined = () => <span>🏷️</span>
