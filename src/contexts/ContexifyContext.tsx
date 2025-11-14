@@ -13,6 +13,9 @@ export const GALLERY_IMAGE_MENU_ID = 'gallery-image-menu'
 
 interface ContextMenuHandlerParams {
   file: FileItem
+  onDelete: (fileId: string) => void
+  onDownload: (file: FileItem) => void
+  onUploadToGallery: (fileId: string) => void
 }
 
 interface GalleryContextMenuHandlerParams {
@@ -21,11 +24,11 @@ interface GalleryContextMenuHandlerParams {
 }
 
 // 处理文件下载
-const handleDownload = async ({ file }: ContextMenuHandlerParams) => {
+const handleDownload = async ({ file }: { file: FileItem }) => {
   try {
     // 调用API下载文件
     const blob = await fileApi.downloadFile(file.id)
-    
+
     // 创建下载链接
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -33,11 +36,11 @@ const handleDownload = async ({ file }: ContextMenuHandlerParams) => {
     a.download = file.name
     document.body.appendChild(a)
     a.click()
-    
+
     // 清理
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
-    
+
     message.success('文件下载成功')
   } catch (error) {
     console.error('下载失败:', error)
@@ -51,20 +54,27 @@ export const FileListContexifyMenu = () => {
   // 处理菜单项点击
   const handleItemClick = ({ id, props }: ItemParams) => {
     hideAll()
-    
+
     const params: ContextMenuHandlerParams = {
-      file: props!.file
+      file: props!.file,
+      onDelete: props!.onDelete,
+      onDownload: props!.onDownload,
+      onUploadToGallery: props!.onUploadToGallery,
     }
-    
+
     switch (id) {
       case 'download':
-        handleDownload(params)
+        if (params.file.type !== 'folder') {
+          handleDownload({ file: params.file })
+        }
         break
       case 'delete':
-        // 删除功能将在其他地方处理
+        params.onDelete(params.file.id)
         break
       case 'uploadToGallery':
-        // 上传到公共图库功能将在其他地方处理
+        if (params.file.type !== 'folder') {
+          params.onUploadToGallery(params.file.id)
+        }
         break
       default:
         break
@@ -76,11 +86,11 @@ export const FileListContexifyMenu = () => {
       <Item id="download" onClick={handleItemClick}>
         <DownloadOutlined /> 下载
       </Item>
-      <Item id="delete" disabled onClick={handleItemClick}>
+      <Item id="delete" onClick={handleItemClick}>
         <DeleteOutlined /> 删除
       </Item>
       <Separator />
-      <Item id="uploadToGallery" disabled onClick={handleItemClick}>
+      <Item id="uploadToGallery" onClick={handleItemClick}>
         <UploadOutlined /> 上传到公共图库
       </Item>
     </Menu>
@@ -93,12 +103,12 @@ export const GalleryImageContexifyMenu = () => {
   // 处理菜单项点击
   const handleItemClick = ({ id, props }: ItemParams) => {
     hideAll()
-    
+
     const params: GalleryContextMenuHandlerParams = {
       image: props!.image,
-      onToggleR18: props!.onToggleR18
+      onToggleR18: props!.onToggleR18,
     }
-    
+
     switch (id) {
       case 'toggleR18':
         params.onToggleR18(params.image)

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Button,
   Input,
@@ -52,7 +52,11 @@ import {
 import { v4 as uuidv4 } from 'uuid'
 import { MultipartUploadManager } from '@/utils/multipartUpload'
 import { useContextMenu } from 'react-contexify'
-import { FILE_LIST_MENU_ID, GalleryImageContexifyMenu } from '@/contexts/ContexifyContext'
+import {
+  FileListContexifyMenu,
+  FILE_LIST_MENU_ID,
+} from '@/contexts/ContexifyContext'
+import DragUploadModal from './components/DragUploadModal'
 
 const { Search } = Input
 
@@ -118,6 +122,9 @@ const HomePage: React.FC = () => {
   const batchDeleteMutation = useBatchDeleteFiles(currentPath)
   const navigate = useNavigate()
   const { show } = useContextMenu({ id: FILE_LIST_MENU_ID })
+
+  // 拖拽上传模态框状态
+  const [isDragUploadModalOpen, setIsDragUploadModalOpen] = useState(false)
 
   // 搜索过滤
   const filteredFiles = searchKeyword
@@ -251,6 +258,21 @@ const HomePage: React.FC = () => {
     })
   }
 
+  // 处理删除文件夹
+  const handleDeleteFolder = (fileId: string) => {
+    Modal.confirm({
+      title: '确认删除文件夹',
+      content:
+        '确定要删除这个文件夹吗？此操作将删除文件夹及其下的所有文件，且不可恢复。',
+      cancelText: '取消',
+      okText: '删除',
+      okType: 'danger',
+      onOk: () => {
+        deleteFileMutation.mutate(fileId)
+      },
+    })
+  }
+
   // 处理批量删除文件
   const handleBatchDelete = () => {
     if (selectedFiles.length === 0) return
@@ -286,7 +308,15 @@ const HomePage: React.FC = () => {
   // 处理表格右键
   const handleContextMenu = (e: React.MouseEvent, record: FileItem) => {
     e.preventDefault()
-    show({ event: e, props: { file: record } })
+    show({
+      event: e,
+      props: {
+        file: record,
+        onDelete: record.type === 'folder' ? handleDeleteFolder : handleDelete,
+        onDownload: handleDownload,
+        onUploadToGallery: handleUploadToGallery,
+      },
+    })
     console.log(record.name)
   }
 
@@ -344,7 +374,13 @@ const HomePage: React.FC = () => {
               {
                 key: 'delete',
                 label: (
-                  <span onClick={() => handleDelete(record.id)}>
+                  <span
+                    onClick={() =>
+                      (record.type === 'folder'
+                        ? handleDeleteFolder
+                        : handleDelete)(record.id)
+                    }
+                  >
                     <DeleteOutlined /> 删除
                   </span>
                 ),
@@ -403,15 +439,14 @@ const HomePage: React.FC = () => {
               onSearch={handleSearch}
               style={{ width: 300 }}
             />
-            <Upload beforeUpload={handleUpload} showUploadList={false} multiple>
-              <Button
-                type="primary"
-                icon={<UploadOutlined />}
-                loading={uploadFileMutation.isPending}
-              >
-                上传文件
-              </Button>
-            </Upload>
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={() => setIsDragUploadModalOpen(true)}
+              loading={uploadFileMutation.isPending}
+            >
+              上传文件
+            </Button>
             <Button
               type="default"
               icon={<FolderAddOutlined />}
@@ -488,7 +523,13 @@ const HomePage: React.FC = () => {
             </div>
           )}
         </Spin>
-        <GalleryImageContexifyMenu />
+        <FileListContexifyMenu />
+        <DragUploadModal
+          open={isDragUploadModalOpen}
+          onCancel={() => setIsDragUploadModalOpen(false)}
+          onUpload={handleUpload}
+          currentPath={currentPath}
+        />
       </div>
     </CSSTransition>
   )

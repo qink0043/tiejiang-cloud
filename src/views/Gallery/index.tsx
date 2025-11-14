@@ -4,9 +4,15 @@ import CSSTransition from 'react-transition-group/CSSTransition'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import Masonry from 'react-masonry-css'
 import { Image, Spin, Tag, message } from 'antd'
-import { getPublicGalleryList, toggleR18Status } from '@/api/modules/publicGallery'
+import {
+  getPublicGalleryList,
+  toggleR18Status,
+} from '@/api/modules/publicGallery'
 import { useContextMenu } from 'react-contexify'
-import { GalleryImageContexifyMenu, GALLERY_IMAGE_MENU_ID } from '@/contexts/ContexifyContext'
+import {
+  GalleryImageContexifyMenu,
+  GALLERY_IMAGE_MENU_ID,
+} from '@/contexts/ContexifyContext'
 
 // 每页加载数量
 const PAGE_SIZE = 20
@@ -39,7 +45,7 @@ const GalleryPage: React.FC = () => {
   // -------------------------------
   // React Query 无限加载逻辑
   // -------------------------------
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, refetch } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useInfiniteQuery<GalleryResponse>({
       queryKey: ['publicGallery'],
       initialPageParam: 1,
@@ -66,7 +72,7 @@ const GalleryPage: React.FC = () => {
     try {
       await toggleR18Status(image.id, !image.is_R18)
       message.success(`${image.is_R18 ? '取消R18标记' : '标记为R18'}成功`)
-      
+
       // 更新查询缓存
       queryClient.setQueriesData(
         { queryKey: ['publicGallery'] },
@@ -78,13 +84,11 @@ const GalleryPage: React.FC = () => {
             pages: oldData.pages.map((page: GalleryResponse) => ({
               ...page,
               list: page.list.map((img: GalleryImage) =>
-                img.id === image.id
-                  ? { ...img, is_R18: !img.is_R18 }
-                  : img
-              )
-            }))
+                img.id === image.id ? { ...img, is_R18: !img.is_R18 } : img,
+              ),
+            })),
           }
-        }
+        },
       )
     } catch (error) {
       message.error(`${image.is_R18 ? '取消R18标记' : '标记为R18'}失败`)
@@ -99,10 +103,10 @@ const GalleryPage: React.FC = () => {
       event: e,
       props: {
         image,
-        onToggleR18: handleToggleR18
-      }
+        onToggleR18: handleToggleR18,
+      },
     })
-    
+
     // 更新菜单文本
     setTimeout(() => {
       const menuItem = document.getElementById('toggle-r18-text')
@@ -164,8 +168,8 @@ const GalleryPage: React.FC = () => {
             columnClassName="masonry-grid-column"
           >
             {allImages.map((img) => (
-              <div 
-                key={img.id} 
+              <div
+                key={img.id}
                 className="masonry-item"
                 onContextMenu={(e) => handleImageContextMenu(e, img)}
               >
